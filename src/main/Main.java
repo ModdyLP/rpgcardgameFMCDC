@@ -10,12 +10,16 @@ public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
-        //Comment
-        Parent root = FXMLLoader.load(getClass().getResource("/sample.fxml"));
-        primaryStage.setTitle("Hello World");
-        primaryStage.setScene(new Scene(root, 300, 275));
+
+
+        //Init Main Window
+        Parent root = FXMLLoader.load(getClass().getResource("/controller/main.fxml"));
+        primaryStage.setTitle("Das RPG Kartenspiel");
+        primaryStage.setScene(new Scene(root));
+        primaryStage.setMaximized(true);
         primaryStage.show();
     }
+
 
 
     public static void main(String[] args) {
