@@ -74,9 +74,6 @@ public class MainController {
                 anchorpane.setMinWidth(mainLayout.getWidth()-80);
                 anchorpane.setMinHeight(mainLayout.getHeight()-80);
                 HubController controller = hubloader.getController();
-                for (Card card: HandCardLoader.getInstance().getAllHandcards()) {
-                    controller.addCardToHbox(card);
-                }
                 mainLayout.setCenter(anchorpane);
                 setDEFStatus();
             } catch (IOException e) {

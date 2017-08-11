@@ -29,8 +29,8 @@ public class HandCardLoader {
         return instance;
     }
 
-    public Collection<Card> getAllHandcards() {
-        return handcards.values();
+    public Collection<GridPane> getAllHandcards() {
+        return handcardsinstance.values();
     }
 
     public Card getHandCardbyID(int cardid) {

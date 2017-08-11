@@ -23,7 +23,8 @@ public class GameLoader {
             @Override
             protected Void call() throws Exception {
                 while(start) {
-
+                    Thread.sleep(1000);
+                    System.out.println("Game Loop");
                 }
                 return null;
             }

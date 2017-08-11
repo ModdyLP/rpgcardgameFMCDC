@@ -42,21 +42,26 @@ public class HubController {
         AllCards.getInstance().loadCards();
         draw1.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             Card card = AllCards.getInstance().getRandomCard();
-            HandCardLoader.getInstance().addCard(card);
-            HandCardLoader.getInstance().addINSTCard(card, GeneralCardLoader.loadHandCard(card, cardbox));
+            if (card != null) {
+                GridPane pane = GeneralCardLoader.loadHandCard(card, cardbox);
+                addCardToHbox(pane, card);
+            } else {
+                MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
+            }
         });
     }
     public static HubController getInstance() {
         return instance;
     }
 
-    public void addCardToHbox(Card card) {
-        if (cardposition <= 4) {
-            GridPane pane = GeneralCardLoader.loadHandCard(card, cardbox);
+    public void addCardToHbox(GridPane pane, Card card) {
+        if (cardposition < 4) {
+            HandCardLoader.getInstance().addCard(card);
             HandCardLoader.getInstance().addINSTCard(card, pane);
-
             cardbox.add(pane, cardposition, 0);
             cardposition++;
+        } else {
+            MainController.getInstance().setStatus("Maximale Anzahl erreicht");
         }
     }
     public void removeFromHBox(GridPane pane) {

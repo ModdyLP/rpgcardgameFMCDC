@@ -12,6 +12,7 @@ public class AllCards {
     private static AllCards instance;
 
     private ObservableList<Card> cards  = FXCollections.observableArrayList();
+    private ObservableList<Card> spielercards  = FXCollections.observableArrayList();
 
     public static AllCards getInstance() {
         if (instance == null) {
@@ -33,13 +34,20 @@ public class AllCards {
         cards.remove(card.getCardnummer());
     }
     public Card getRandomCard() {
-        return cards.get((int)(Math.random()*cards.size()));
+        if (spielercards.size() != 0) {
+            Card card = spielercards.get((int) (Math.random() * spielercards.size()));
+            spielercards.remove(card);
+            return card;
+        } else {
+            return null;
+        }
     }
     public void loadCards() {
         addCard(new HeroCard(0, "Elfe Vorha", "exportpng/elfe.png", "Eine Elfe", 10, 15, 10));
         addCard(new HeroCard(1, "Vampir Dracula", "exportpng/vampire.png", "Ein Vampir", 10, 15, 10));
         addCard(new HeroCard(2, "Drache Ohnezahn", "exportpng/dragon.png", "Ein Drache", 10, 15, 10));
 
+        spielercards.addAll(getCards());
     }
 
 
