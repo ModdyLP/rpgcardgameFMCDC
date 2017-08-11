@@ -9,6 +9,7 @@ import objects.Card;
  */
 public class AllCards {
     private static AllCards instance;
+
     private ObservableList<Card> cards  = FXCollections.observableArrayList();
 
     public static AllCards getInstance() {
@@ -17,6 +18,22 @@ public class AllCards {
         }
         return instance;
     }
+    public ObservableList<Card> getCards() {
+        return cards;
+    }
+
+    public void setCards(ObservableList<Card> cards) {
+        this.cards = cards;
+    }
+    public void addCard(Card card) {
+        cards.add(card.getCardnummer(), card);
+    }
+    public void removeCard(Card card) {
+        cards.remove(card.getCardnummer());
+    }
+
+
+
 
 
 }

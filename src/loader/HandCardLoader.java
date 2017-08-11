@@ -11,6 +11,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
+import objects.Type;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
@@ -48,31 +49,33 @@ public class HandCardLoader {
 
     public void addINSTCard(Card card, GridPane pane) {
         final int[] cardid = {0};
-        final ContextMenu cm = new ContextMenu();
-        MenuItem legen = new MenuItem("Karte legen");
-        legen.setOnAction(e -> {
-            if(HubController.getInstance().herocard == null) {
-                System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
-                removeHandcard(cardid[0]);
-                HeroLoader.getInstance().setHerocard(card, handcardsinstance.get(cardid[0]));
-                HubController.getInstance().setHeroCard(pane);
-                removeINSTHandcard(cardid[0]);
-            } else {
-                MainController.getInstance().setStatus("Es ist bereits eine Karte gelegt");
-            }
-        });
-
-        cm.getItems().add(legen);
-        handcardsinstance.add(card.getCardnummer(), pane);
-        pane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            for (int i = 0; i < handcardsinstance.size(); i++) {
-                if (handcardsinstance.get(i) != null && handcardsinstance.get(i).equals(pane)) {
-                    System.out.println(handcards.get(i).getCardname());
-                    cardid[0] = handcards.get(i).getCardnummer();
-                    cm.show(pane, event.getScreenX(), event.getScreenY());
+        if (card.getCardtype().equals(Type.HELD)) {
+            final ContextMenu cm = new ContextMenu();
+            MenuItem legen = new MenuItem("Karte legen");
+            legen.setOnAction(e -> {
+                if (HubController.getInstance().herocard == null) {
+                    System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
+                    removeHandcard(cardid[0]);
+                    HeroLoader.getInstance().setHerocard(card, handcardsinstance.get(cardid[0]));
+                    HubController.getInstance().setHeroCard(pane);
+                    removeINSTHandcard(cardid[0]);
+                } else {
+                    MainController.getInstance().setStatus("Es ist bereits eine Karte gelegt");
                 }
-            }
-        });
+            });
+
+            cm.getItems().add(legen);
+            handcardsinstance.add(card.getCardnummer(), pane);
+            pane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                for (int i = 0; i < handcardsinstance.size(); i++) {
+                    if (handcardsinstance.get(i) != null && handcardsinstance.get(i).equals(pane)) {
+                        System.out.println(handcards.get(i).getCardname());
+                        cardid[0] = handcards.get(i).getCardnummer();
+                        cm.show(pane, event.getScreenX(), event.getScreenY());
+                    }
+                }
+            });
+        }
     }
 
     public void removeINSTHandcard(int cardid) {

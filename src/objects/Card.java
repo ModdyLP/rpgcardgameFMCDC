@@ -8,4 +8,5 @@ public interface Card {
     String getDescription();
     String getCardname();
     int getCardnummer();
+    Type getCardtype();
 }
