@@ -6,3 +6,9 @@
 .label {
     -fx-font-size: 60%;
 }
+.labelhub {
+    -fx-font-size: 200%;
+}
+.labelhubsmall {
+    -fx-font-size: 130%;
+}

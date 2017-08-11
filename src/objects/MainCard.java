@@ -4,12 +4,22 @@ package objects;
  * Created by ModdyLP on 10.08.2017. Website: https://moddylp.de/
  */
 public class MainCard {
+
+
+    private int cardnummer;
     private String cardname;
     private Type cardtype;
     private String description;
     private String fileurl;
 
-    
+    public int getCardnummer() {
+        return cardnummer;
+    }
+
+    public void setCardnummer(int cardnummer) {
+        this.cardnummer = cardnummer;
+    }
+
     public String getFileurl() {
         return fileurl;
     }

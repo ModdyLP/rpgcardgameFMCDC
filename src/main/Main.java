@@ -6,8 +6,10 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import loader.HandCardLoader;
 
 public class Main extends Application {
 
@@ -27,7 +29,7 @@ public class Main extends Application {
                 MainController.getInstance().exit();
             }
         });
-
+        HandCardLoader.getInstance().loadCards();
     }
 
 

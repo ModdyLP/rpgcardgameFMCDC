@@ -35,8 +35,19 @@ public class CardController {
     @FXML
     public ImageView cardimage;
 
+    @FXML
+    public Label description;
+
     public void setImage(Image image) {
         cardimage.setImage(image);
+    }
+
+    public void setDescription(String description) {
+        this.description.setText(description);
+    }
+
+    public void setCardname(String name) {
+        this.cardname.setText(name);
     }
 
 }

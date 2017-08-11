@@ -6,10 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
-import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import main.Main;
+import loader.HandCardLoader;
+import objects.Card;
 import utils.GeneralDialog;
 
 import java.io.IOException;
@@ -30,7 +30,7 @@ public class MainController {
     private MenuItem neustart;
 
     @FXML
-    private BorderPane mainLayout;
+    public BorderPane mainLayout;
 
 
     public static MainController getInstance() {
@@ -68,11 +68,13 @@ public class MainController {
         Platform.runLater(() -> {
             try {
                 FXMLLoader hubloader = new FXMLLoader(getClass().getResource("/controller/hub.fxml"));
-                GridPane anchorpane = (GridPane) hubloader.load();
+                GridPane anchorpane = hubloader.load();
                 anchorpane.setMinWidth(mainLayout.getWidth()-80);
                 anchorpane.setMinHeight(mainLayout.getHeight()-80);
-                HubController controller = hubloader.<HubController>getController();
-                controller.addCardToHbox();
+                HubController controller = hubloader.getController();
+                for (Card card: HandCardLoader.getInstance().getAllHandcards()) {
+                    controller.addCardToHbox(card);
+                }
                 mainLayout.setCenter(anchorpane);
                 setDEFStatus();
             } catch (IOException e) {

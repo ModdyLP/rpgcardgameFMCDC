@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.scene.control.Label?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.ColumnConstraints?>
 <?import javafx.scene.layout.GridPane?>
@@ -29,6 +30,7 @@
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
       <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
+      <ColumnConstraints hgrow="SOMETIMES" minWidth="10.0" percentWidth="5.0" prefWidth="100.0" />
   </columnConstraints>
   <rowConstraints>
       <RowConstraints minHeight="10.0" percentHeight="15.0" prefHeight="30.0" vgrow="SOMETIMES" />
@@ -49,7 +51,7 @@
       <RowConstraints minHeight="10.0" percentHeight="15.0" prefHeight="30.0" vgrow="SOMETIMES" />
   </rowConstraints>
    <children>
-      <BorderPane fx:id="grave" prefHeight="200.0" prefWidth="200.0" styleClass="borderline" GridPane.columnIndex="18" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.rowSpan="4" />
+      <BorderPane fx:id="grave" prefHeight="200.0" prefWidth="200.0" styleClass="borderline" GridPane.columnIndex="18" GridPane.columnSpan="2" GridPane.rowIndex="2" GridPane.rowSpan="4" />
       <BorderPane fx:id="draw2" prefHeight="200.0" prefWidth="200.0" styleClass="borderline" stylesheets="@style.css" GridPane.columnIndex="19" GridPane.columnSpan="2" GridPane.rowIndex="10" GridPane.rowSpan="4" />
       <BorderPane fx:id="draw1" prefHeight="200.0" prefWidth="200.0" styleClass="borderline" stylesheets="@style.css" GridPane.columnIndex="16" GridPane.columnSpan="2" GridPane.rowIndex="10" GridPane.rowSpan="4" />
       <BorderPane fx:id="hero1" prefHeight="200.0" prefWidth="200.0" styleClass="borderline" stylesheets="@style.css" GridPane.columnIndex="4" GridPane.columnSpan="2" GridPane.rowIndex="4" GridPane.rowSpan="4" />
@@ -65,5 +67,10 @@
           <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
         </rowConstraints>
       </GridPane>
+      <Label styleClass="labelhub" stylesheets="@style.css" text="Handkarten" GridPane.columnIndex="1" GridPane.columnSpan="5" GridPane.rowIndex="9" />
+      <Label styleClass="labelhub" stylesheets="@style.css" text="Friedhof" GridPane.columnIndex="18" GridPane.columnSpan="4" GridPane.rowIndex="1" />
+      <Label styleClass="labelhubsmall" stylesheets="@style.css" text="Helden" GridPane.columnIndex="16" GridPane.columnSpan="2" GridPane.rowIndex="9" />
+      <Label styleClass="labelhubsmall" stylesheets="@style.css" text="Besondere" GridPane.columnIndex="19" GridPane.columnSpan="3" GridPane.rowIndex="9" />
+      <Label styleClass="labelhub" text="Karten" GridPane.columnIndex="17" GridPane.columnSpan="3" GridPane.rowIndex="8" />
    </children>
 </GridPane>

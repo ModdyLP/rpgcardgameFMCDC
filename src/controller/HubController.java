@@ -1,16 +1,16 @@
 package controller;
 
-import javafx.application.Platform;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-import javafx.scene.layout.*;
-import objects.HeroCard;
-
-import java.io.File;
+import javafx.scene.layout.BorderPane;
+import javafx.scene.layout.GridPane;
+import loader.GeneralCardLoader;
+import loader.HandCardLoader;
+import objects.Card;
 
 public class HubController {
+
+    int cardposition = 0;
+    public GridPane herocard = null;
 
     @FXML
     private GridPane cardbox;
@@ -29,28 +29,34 @@ public class HubController {
 
     @FXML
     private BorderPane grave;
+    private static HubController instance;
 
-    public void addCardToHbox() {
-        grave.setCenter(loadCard("/controller/card.fxml", "exportpng/elfe.png"));
-        cardbox.add(loadCard("/controller/card.fxml", "exportpng/elfe.png"), 0, 0);
-        cardbox.add(loadCard("/controller/card.fxml", "exportpng/vampire.png"), 1, 0);
-        cardbox.add(loadCard("/controller/card.fxml", "exportpng/dragon.png"), 2, 0);
+
+    public void initialize() {
+        instance = this;
     }
-    public GridPane loadCard(String ressource, String imageurl) {
-        try {
-            FXMLLoader loader = new FXMLLoader(getClass().getResource(ressource));
-            GridPane card = loader.load();
-            card.setMaxHeight(cardbox.getMaxHeight());
-            CardController controller = loader.<CardController>getController();
-            File file = new File(imageurl);
-            System.out.println(file.getAbsolutePath());
-            Image image = new Image(file.toURI().toString());
-            controller.setImage(image);
-            return card;
-        } catch (Exception ex) {
-            ex.printStackTrace();
+    public static HubController getInstance() {
+        return instance;
+    }
+
+    public void addCardToHbox(Card card) {
+        if (cardposition <= 4) {
+            GridPane pane = GeneralCardLoader.loadHandCard(card, cardbox);
+            HandCardLoader.getInstance().addINSTCard(card, pane);
+
+            cardbox.add(pane, cardposition, 0);
+            cardposition++;
         }
-        return null;
     }
+    public void removeFromHBox(GridPane pane) {
+       cardbox.getChildren().removeAll(pane);
+    }
+    public void setHeroCard(GridPane pane) {
+        if (herocard == null) {
+            hero1.setCenter(pane);
+            herocard = pane;
+        }
+    }
+
 
 }
