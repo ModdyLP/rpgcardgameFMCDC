@@ -8,6 +8,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import loader.AllCards;
+import loader.GameLoader;
 import loader.HandCardLoader;
 import objects.Card;
 import utils.GeneralDialog;
@@ -81,6 +83,7 @@ public class MainController {
                 e.printStackTrace();
             }
         });
+        GameLoader.getInstance().gameloop();
     }
 
 }

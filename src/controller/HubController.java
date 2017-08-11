@@ -1,10 +1,15 @@
 package controller;
 
 import javafx.fxml.FXML;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
+import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import loader.AllCards;
 import loader.GeneralCardLoader;
 import loader.HandCardLoader;
+import loader.HeroLoader;
 import objects.Card;
 
 public class HubController {
@@ -34,6 +39,12 @@ public class HubController {
 
     public void initialize() {
         instance = this;
+        AllCards.getInstance().loadCards();
+        draw1.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+            Card card = AllCards.getInstance().getRandomCard();
+            HandCardLoader.getInstance().addCard(card);
+            HandCardLoader.getInstance().addINSTCard(card, GeneralCardLoader.loadHandCard(card, cardbox));
+        });
     }
     public static HubController getInstance() {
         return instance;

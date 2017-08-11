@@ -2,9 +2,7 @@ package loader;
 
 import controller.HubController;
 import controller.MainController;
-import javafx.collections.FXCollections;
-import javafx.collections.ListChangeListener;
-import javafx.collections.ObservableList;
+import javafx.collections.*;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
@@ -13,13 +11,16 @@ import objects.Card;
 import objects.HeroCard;
 import objects.Type;
 
+import java.util.ArrayList;
+import java.util.Collection;
+
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
  */
 public class HandCardLoader {
     private static HandCardLoader instance;
-    private ObservableList<Card> handcards = FXCollections.observableArrayList();
-    private ObservableList<GridPane> handcardsinstance = FXCollections.observableArrayList();
+    private ObservableMap<Integer, Card> handcards = FXCollections.observableHashMap();
+    private ObservableMap<Integer, GridPane> handcardsinstance = FXCollections.observableHashMap();
 
     public static HandCardLoader getInstance() {
         if (instance == null) {
@@ -28,19 +29,20 @@ public class HandCardLoader {
         return instance;
     }
 
-    public ObservableList<Card> getAllHandcards() {
-        return handcards;
+    public Collection<Card> getAllHandcards() {
+        return handcards.values();
     }
 
     public Card getHandCardbyID(int cardid) {
         return handcards.get(cardid);
     }
+
     public GridPane getHandCardINSTbyID(int cardid) {
         return handcardsinstance.get(cardid);
     }
 
     public void addCard(Card card) {
-        handcards.add(card.getCardnummer(), card);
+        handcards.put(card.getCardnummer(), card);
     }
 
     public void removeHandcard(int cardid) {
@@ -65,7 +67,7 @@ public class HandCardLoader {
             });
 
             cm.getItems().add(legen);
-            handcardsinstance.add(card.getCardnummer(), pane);
+            handcardsinstance.put(card.getCardnummer(), pane);
             pane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
                 for (int i = 0; i < handcardsinstance.size(); i++) {
                     if (handcardsinstance.get(i) != null && handcardsinstance.get(i).equals(pane)) {
@@ -83,16 +85,11 @@ public class HandCardLoader {
     }
 
     public void loadCards() {
-        handcards.add(0, new HeroCard(0, "Elfe Vorha", "exportpng/elfe.png", "Eine Elfe", 10, 15, 10));
-        handcards.add(1, new HeroCard(1, "Vampir Dracula", "exportpng/vampire.png", "Ein Vampir", 10, 15, 10));
-        handcards.add(2, new HeroCard(2, "Drache Ohnezahn", "exportpng/dragon.png", "Ein Drache", 10, 15, 10));
-
-        handcardsinstance.addListener(new ListChangeListener<GridPane>() {
+        handcardsinstance.addListener(new MapChangeListener<Integer, GridPane>() {
             @Override
-            public void onChanged(Change<? extends GridPane> c) {
-                c.next();
-                for (GridPane pane : c.getRemoved()) {
-                    HubController.getInstance().removeFromHBox(pane);
+            public void onChanged(Change<? extends Integer, ? extends GridPane> change) {
+                if (change.wasRemoved()) {
+                    HubController.getInstance().removeFromHBox(change.getValueRemoved());
                 }
             }
         });
