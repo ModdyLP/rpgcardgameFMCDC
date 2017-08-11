@@ -1,13 +1,36 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Rectangle2D?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.ProgressBar?>
+<?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
 
-<AnchorPane minHeight="400.0" minWidth="250.0" prefHeight="400.0" prefWidth="250.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cardcontroller">
+<AnchorPane minHeight="400.0" minWidth="255.0" prefHeight="400.0" prefWidth="250.0" styleClass="borderline" stylesheets="@style.css" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.cardcontroller">
    <children>
-      <ImageView fitHeight="150.0" fitWidth="200.0" layoutX="25.0" layoutY="50.0" pickOnBounds="true" preserveRatio="true" styleClass="borderline" />
-      <Label fx:id="cardname" contentDisplay="CENTER" layoutX="111.0" layoutY="14.0" text="Kartenname" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
-      <Label layoutX="25.0" layoutY="200.0" text="Label" />
+      <Label fx:id="cardname" alignment="CENTER" layoutX="111.0" layoutY="14.0" text="Kartenname" textAlignment="CENTER" AnchorPane.leftAnchor="0.0" AnchorPane.rightAnchor="0.0" />
+      <Label layoutX="9.0" layoutY="279.0" text="Leben" AnchorPane.leftAnchor="5.0" />
+      <ProgressBar layoutX="60.0" layoutY="279.0" prefHeight="18.0" prefWidth="158.0" progress="0.0" />
+      <ProgressBar layoutX="60.0" layoutY="314.0" prefHeight="18.0" prefWidth="158.0" progress="0.0" />
+      <ProgressBar layoutX="84.0" layoutY="350.0" prefHeight="18.0" prefWidth="132.0" progress="0.0" />
+      <HBox blendMode="MULTIPLY" layoutX="25.0" layoutY="35.0" prefHeight="220.0" prefWidth="200.0" styleClass="borderline" stylesheets="@style.css" AnchorPane.leftAnchor="25.0" AnchorPane.rightAnchor="25.0">
+         <children>
+            <ImageView fitHeight="186.0" fitWidth="186.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../../exportpng/elfe.png" />
+               </image>
+               <viewport>
+                  <Rectangle2D minX="190.0" minY="220.0" />
+               </viewport>
+            </ImageView>
+         </children>
+      </HBox>
+      <Label layoutX="12.0" layoutY="315.0" text="Angriff" AnchorPane.leftAnchor="5.0" />
+      <Label layoutX="11.0" layoutY="351.0" text="Verteidigung" AnchorPane.leftAnchor="5.0" />
+      <Label layoutX="222.0" layoutY="279.0" text="0" />
+      <Label layoutX="222.0" layoutY="315.0" text="0" />
+      <Label layoutX="222.0" layoutY="351.0" text="0" />
    </children>
 </AnchorPane>
