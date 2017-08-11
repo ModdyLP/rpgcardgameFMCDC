@@ -7,7 +7,16 @@ public class MainCard {
     private String cardname;
     private Type cardtype;
     private String description;
+    private String fileurl;
 
+    
+    public String getFileurl() {
+        return fileurl;
+    }
+
+    public void setFileurl(String fileurl) {
+        this.fileurl = fileurl;
+    }
 
     public String getDescription() {
         return description;

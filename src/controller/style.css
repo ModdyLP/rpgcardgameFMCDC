@@ -1,5 +1,8 @@
 .borderline {
     -fx-border-color: black;
     -fx-border-style: solid;
-    -fx-border-width: 5;
+    -fx-border-width: 2;
+}
+.label {
+    -fx-font-size: 60%;
 }
