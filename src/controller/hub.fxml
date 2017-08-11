@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.Pane?>
+
+
+<AnchorPane prefHeight="400.0" prefWidth="600.0" xmlns="http://javafx.com/javafx/8.0.111" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Hub">
+   <children>
+      <Pane layoutX="508.0" layoutY="265.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="439.0" layoutY="265.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" scaleZ="0.5" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="1.0" layoutY="265.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="80.0" layoutY="265.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="160.0" layoutY="265.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="240.0" layoutY="265.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="125.0" layoutY="143.0" prefHeight="129.0" prefWidth="85.0" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="329.0" layoutY="79.0" prefHeight="129.0" prefWidth="85.0" styleClass="borderline" stylesheets="@style.css" />
+      <Pane layoutX="473.0" layoutY="136.0" prefHeight="129.0" prefWidth="85.0" scaleX="0.8" scaleY="0.8" styleClass="borderline" stylesheets="@style.css" />
+   </children>
+</AnchorPane>
