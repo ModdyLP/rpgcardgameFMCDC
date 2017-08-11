@@ -5,17 +5,12 @@ import controller.MainController;
 import javafx.collections.FXCollections;
 import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
