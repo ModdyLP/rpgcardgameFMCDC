@@ -27,16 +27,17 @@ public class CardController {
     public ProgressBar livepoints;
 
     @FXML
-    public ProgressBar attackpoints;
-
-    @FXML
-    public ProgressBar defendpoints;
-
-    @FXML
     public ImageView cardimage;
 
     @FXML
     public Label description;
+
+
+    public void initialize() {
+        setLivepoints(100);
+        setAttackpoints(0);
+        setDefendpoints(0);
+    }
 
     public void setImage(Image image) {
         cardimage.setImage(image);
@@ -48,6 +49,15 @@ public class CardController {
 
     public void setCardname(String name) {
         this.cardname.setText(name);
+    }
+    public void setLivepoints(int progress) {
+        livepoints.progressProperty().set(progress);
+    }
+    public void setAttackpoints(int attackpoints) {
+        attackpointstxt.setText(String.valueOf(attackpoints));
+    }
+    public void setDefendpoints(int defendpoints) {
+        defendpointstxt.setText(String.valueOf(defendpoints));
     }
 
 }

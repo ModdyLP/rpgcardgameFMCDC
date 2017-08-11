@@ -55,11 +55,11 @@
          </children>
       </Pane>
       <ProgressBar fx:id="livepoints" prefWidth="200.0" progress="0.0" GridPane.columnIndex="4" GridPane.columnSpan="5" GridPane.rowIndex="10" />
-      <ProgressBar fx:id="attackpoints" prefWidth="200.0" progress="0.0" GridPane.columnIndex="4" GridPane.columnSpan="5" GridPane.rowIndex="11" />
-      <ProgressBar fx:id="defendpoints" prefWidth="200.0" progress="0.0" GridPane.columnIndex="4" GridPane.columnSpan="5" GridPane.rowIndex="12" />
       <Label text="L:" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="10" />
       <Label text="ATK:" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="11" />
       <Label text="DEF:" GridPane.columnIndex="1" GridPane.columnSpan="2" GridPane.rowIndex="12" />
       <Label fx:id="description" stylesheets="@style.css" text="Label" GridPane.columnIndex="1" GridPane.columnSpan="8" GridPane.rowIndex="13" GridPane.rowSpan="2" />
+      <Label fx:id="attackpointstxt" text="Label" GridPane.columnIndex="4" GridPane.columnSpan="5" GridPane.rowIndex="11" />
+      <Label fx:id="defendpointstxt" text="Label" GridPane.columnIndex="4" GridPane.columnSpan="5" GridPane.rowIndex="12" />
    </children>
 </GridPane>
