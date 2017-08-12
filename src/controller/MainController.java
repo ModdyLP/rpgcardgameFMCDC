@@ -61,13 +61,17 @@ public class MainController {
 
     //Listener
     public void exit() {
-        GeneralDialog.littleInfoDialog("Danke für das Ausprobieren unseres Spiels.", "Danke");
-        System.exit(0);
+        //GeneralDialog.littleInfoDialog("Danke für das Ausprobieren unseres Spiels.", "Danke");
+        Platform.runLater(() -> {
+            GameLoader.getInstance().setStart(false);
+            GameLoader.getInstance().logout();
+            GeneralDialog.logout();
+            System.exit(0);
+        });
     }
     public void restart() {
         GameLoader.getInstance().setStart(false);
         setStatus("Lade Hub...");
-        GameLoader.getInstance().gameloop();
         GeneralCardLoader.clearall();
         if (pane != null) {
             mainLayout.setCenter(null);
@@ -76,7 +80,6 @@ public class MainController {
         MainController.getInstance().setStatus("Starte neu");
         Platform.runLater(() -> {
             try {
-                Thread.sleep(1000);
                 FXMLLoader hubloader = new FXMLLoader(getClass().getResource("/controller/hub.fxml"));
                 pane = hubloader.load();
                 pane.setMinWidth(mainLayout.getWidth()-80);
@@ -88,7 +91,8 @@ public class MainController {
                 e.printStackTrace();
             }
         });
-
+        GameLoader.getInstance().setStart(true);
+        GameLoader.getInstance().gameloop();
     }
 
 }

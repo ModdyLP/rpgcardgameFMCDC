@@ -1,16 +1,17 @@
 package storage;
 
+import objects.Card;
+
 import java.lang.reflect.Executable;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.ResultSet;
 import java.sql.Statement;
+import java.util.ArrayList;
 
 public class MySQLConnector {
 
     private static MySQLConnector instance;
-    private Connection connect;
-    private Statement statement;
 
     public static MySQLConnector getInstance() {
         if (instance == null) {
@@ -19,45 +20,61 @@ public class MySQLConnector {
         return instance;
     }
 
-    private void readDataBase() {
+    private Statement readDataBase() {
         try {
             // This will load the MySQL driver, each DB has its own driver
             Class.forName("com.mysql.jdbc.Driver").newInstance();
             // Setup the connection with the DB
-            connect = DriverManager
+            Connection connect =  DriverManager
                     .getConnection("jdbc:mysql://host.moddylp.de/admin_codecamp?"
                             + "user=admin_codecamp&password=codecamp42");
 
             // Statements allow to issue SQL queries to the database
-            statement = connect.createStatement();
+            return connect.createStatement();
             // Result set get the result of the SQL quer
 
         } catch (Exception e) {
             e.printStackTrace();
         }
+        return null;
     }
 
     public ResultSet getResultofQuery(String query) {
         try {
-            readDataBase();
-            return statement
-                    .executeQuery("SELECT * FROM Karten");
+            System.out.println(query);
+            return readDataBase()
+                    .executeQuery(query);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         return null;
     }
-
-
-    public void close() {
+    public void execute(String query) {
         try {
-            if (statement != null) {
-                statement.close();
+            Statement st = readDataBase();
+            assert st != null;
+            st.execute(query);
+            st.getConnection().close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
+    public void insertMany(ArrayList<Integer> cards, int player) {
+        try {
+            Statement st = readDataBase();
+            for (int cardid: cards) {
+                st.execute("INSERT INTO `cardtoplayer` (`id`, `cardid`, `playerid`) VALUES (NULL, '" + cardid + "', '" + player + "');");
             }
+            st.getConnection().close();
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
+    }
 
-            if (connect != null) {
-                connect.close();
-            }
+
+    public static void close(ResultSet rs) {
+        try {
+            rs.getStatement().getConnection().close();
         } catch (Exception e) {
             e.printStackTrace();
         }

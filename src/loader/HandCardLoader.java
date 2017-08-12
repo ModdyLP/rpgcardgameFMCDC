@@ -71,13 +71,13 @@ public class HandCardLoader {
 
             cm.getItems().add(legen);
             showCM(cm, pane, cardid);
-        } else if (card.getCardtype().equals(Type.ZAUBER)){
+        } else if (card.getCardtype().equals(Type.ZAUBER)) {
             final ContextMenu cm = new ContextMenu();
             MenuItem legen = new MenuItem("Karte benutzen");
             legen.setOnAction(e -> {
-                    System.out.println("Karte benutzt: " + handcards.get(cardid[0]).getCardname());
-                    removeHandcard(cardid[0]);
-                    removeINSTHandcard(cardid[0]);
+                System.out.println("Karte benutzt: " + handcards.get(cardid[0]).getCardname());
+                removeHandcard(cardid[0]);
+                removeINSTHandcard(cardid[0]);
             });
             cm.getItems().add(legen);
             showCM(cm, pane, cardid);
@@ -98,16 +98,19 @@ public class HandCardLoader {
 
 
     }
+
     public void showCM(ContextMenu cm, GridPane pane, int[] cardid) {
         try {
             pane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                for (int key : handcardsinstance.keySet()) {
-                    if (handcardsinstance.get(key) != null && handcardsinstance.get(key).equals(pane)) {
-                        System.out.println(handcards.get(key).getCardname());
-                        cardid[0] = handcards.get(key).getUniqueNumber();
-                        cm.show(pane, event.getScreenX(), event.getScreenY());
-                    } else {
-                        System.out.println("Pane does not exist");
+                if (GameLoader.getInstance().isIstamzug()) {
+                    for (int key : handcardsinstance.keySet()) {
+                        if (handcardsinstance.get(key) != null && handcardsinstance.get(key).equals(pane)) {
+                            System.out.println(handcards.get(key).getCardname());
+                            cardid[0] = handcards.get(key).getUniqueNumber();
+                            cm.show(pane, event.getScreenX(), event.getScreenY());
+                        } else {
+                            System.out.println("Pane does not exist");
+                        }
                     }
                 }
             });
