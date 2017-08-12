@@ -15,13 +15,13 @@
     public int runden(int s, int v){
     sa = s;
     ve = v;
-      if(ve>= 20){
-       ve =19;
-      }
     double z = 0;
     z = s - sa*ve/20;
     z = Math.round(z);
     se = (int)z ;
+if (se<1){
+se=1;
+}
     return se;
    
     }
