@@ -23,6 +23,10 @@ public class GeneralCardLoader {
             card.setMaxHeight(cardbox.getMaxHeight());
             CardController controller = loader.getController();
             File file = new File(herokarte.getFileurl());
+            System.out.println(herokarte.getFileurl());
+            if (!file.exists()) {
+                file = new File(MainController.class.getResource("/controller/Fragezeichen.png").getPath());
+            }
             System.out.println(file.getAbsolutePath());
             Image image = new Image(file.toURI().toString());
             controller.setImage(image);
@@ -36,5 +40,9 @@ public class GeneralCardLoader {
             ex.printStackTrace();
         }
         return null;
+    }
+    public static void clearall() {
+        AllCards.getInstance().clear();
+        HandCardLoader.getInstance().clear();
     }
 }

@@ -12,3 +12,8 @@
 .labelhubsmall {
     -fx-font-size: 130%;
 }
+.menu-item .label{
+    -fx-text-fill: darkblue;
+    -fx-alignment: center;
+    -fx-font-size: 200%;
+}

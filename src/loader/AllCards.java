@@ -1,18 +1,25 @@
 package loader;
 
+import controller.MainController;
 import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
+import javafx.collections.ObservableMap;
 import objects.Card;
 import objects.HeroCard;
+import storage.MySQLConnector;
+
+import java.sql.ResultSet;
+import java.util.Collection;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
  */
 public class AllCards {
     private static AllCards instance;
+    private int cardnummer = 0;
 
-    private ObservableList<Card> cards  = FXCollections.observableArrayList();
-    private ObservableList<Card> spielercards  = FXCollections.observableArrayList();
+    private ObservableMap<Integer, Card> cards = FXCollections.observableHashMap();
+    private ObservableMap<Integer, Card> spielercards = FXCollections.observableHashMap();
 
     public static AllCards getInstance() {
         if (instance == null) {
@@ -20,38 +27,67 @@ public class AllCards {
         }
         return instance;
     }
-    public ObservableList<Card> getCards() {
-        return cards;
+
+    public Collection<Card> getCards() {
+        return cards.values();
     }
 
-    public void setCards(ObservableList<Card> cards) {
-        this.cards = cards;
+    public void clear() {
+        cards.clear();
+        spielercards.clear();
     }
+
     public void addCard(Card card) {
-        cards.add(card.getCardnummer(), card);
+        card.setUniqueNumber(cardnummer);
+        cards.put(cardnummer, card);
+        spielercards.put(cardnummer, card);
+        cardnummer++;
     }
+
     public void removeCard(Card card) {
         cards.remove(card.getCardnummer());
     }
+
     public Card getRandomCard() {
         if (spielercards.size() != 0) {
-            Card card = spielercards.get((int) (Math.random() * spielercards.size()));
-            spielercards.remove(card);
+            Card card = null;
+            while (card == null) {
+                int random = ThreadLocalRandom.current().nextInt(0, spielercards.size());
+                card = spielercards.get(random);
+            }
+            System.out.println(spielercards.size()+"  "+card.getUniqueNumber());
+            spielercards.remove(card.getUniqueNumber());
             return card;
         } else {
             return null;
         }
     }
-    public void loadCards() {
-        addCard(new HeroCard(0, "Elfe Vorha", "exportpng/elfe.png", "Eine Elfe", 10, 15, 10));
-        addCard(new HeroCard(1, "Vampir Dracula", "exportpng/vampire.png", "Ein Vampir", 10, 15, 10));
-        addCard(new HeroCard(2, "Drache Ohnezahn", "exportpng/dragon.png", "Ein Drache", 10, 15, 10));
 
-        spielercards.addAll(getCards());
+    public void loadCards() {
+        try {
+            MainController.getInstance().setStatus("Loading Cards...");
+            ResultSet rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM Karten");
+            while (rs.next()) {
+                System.out.print("##"+rs.getString("name")+"##");
+                if (rs.getString("type").equals("HELD")) {
+                    addCard(new HeroCard(rs.getInt("nr"), rs.getString("name"), rs.getString("bild") + ".png", "", rs.getInt("leben"), rs.getInt("verteidigung"), rs.getInt("angriff")));
+                }
+            }
+        } catch (
+                Exception ex)
+
+        {
+            ex.printStackTrace();
+        } finally
+
+        {
+            MySQLConnector.getInstance().close();
+        }
+        MainController.getInstance().
+
+                setDEFStatus();
     }
 
-
-
-
-
 }
+
+

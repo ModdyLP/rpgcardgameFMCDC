@@ -11,6 +11,7 @@ public class MainCard {
     private Type cardtype;
     private String description;
     private String fileurl;
+    private int uniqueNumber;
 
     public int getCardnummer() {
         return cardnummer;
@@ -50,5 +51,13 @@ public class MainCard {
 
     public void setCardtype(Type cardtype) {
         this.cardtype = cardtype;
+    }
+
+    public int getUniqueNumber() {
+        return uniqueNumber;
+    }
+
+    public void setUniqueNumber(int uniqueNumber) {
+        this.uniqueNumber = uniqueNumber;
     }
 }

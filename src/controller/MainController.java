@@ -8,10 +8,8 @@ import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
-import loader.AllCards;
 import loader.GameLoader;
-import loader.HandCardLoader;
-import objects.Card;
+import loader.GeneralCardLoader;
 import utils.GeneralDialog;
 
 import java.io.IOException;
@@ -33,6 +31,7 @@ public class MainController {
 
     @FXML
     public BorderPane mainLayout;
+    private GridPane pane;
 
 
     public static MainController getInstance() {
@@ -66,21 +65,30 @@ public class MainController {
         System.exit(0);
     }
     public void restart() {
-        setStatus("Lade Hub");
+        GameLoader.getInstance().setStart(false);
+        setStatus("Lade Hub...");
+        GameLoader.getInstance().gameloop();
+        GeneralCardLoader.clearall();
+        if (pane != null) {
+            mainLayout.setCenter(null);
+            HubController.destroy();
+        }
+        MainController.getInstance().setStatus("Starte neu");
         Platform.runLater(() -> {
             try {
+                Thread.sleep(1000);
                 FXMLLoader hubloader = new FXMLLoader(getClass().getResource("/controller/hub.fxml"));
-                GridPane anchorpane = hubloader.load();
-                anchorpane.setMinWidth(mainLayout.getWidth()-80);
-                anchorpane.setMinHeight(mainLayout.getHeight()-80);
+                pane = hubloader.load();
+                pane.setMinWidth(mainLayout.getWidth()-80);
+                pane.setMinHeight(mainLayout.getHeight()-80);
                 HubController controller = hubloader.getController();
-                mainLayout.setCenter(anchorpane);
+                mainLayout.setCenter(pane);
                 setDEFStatus();
-            } catch (IOException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         });
-        GameLoader.getInstance().gameloop();
+
     }
 
 }

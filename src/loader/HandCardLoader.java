@@ -8,10 +8,8 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
-import objects.HeroCard;
 import objects.Type;
 
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -21,6 +19,11 @@ public class HandCardLoader {
     private static HandCardLoader instance;
     private ObservableMap<Integer, Card> handcards = FXCollections.observableHashMap();
     private ObservableMap<Integer, GridPane> handcardsinstance = FXCollections.observableHashMap();
+
+    public void clear() {
+        handcardsinstance.clear();
+        handcards.clear();
+    }
 
     public static HandCardLoader getInstance() {
         if (instance == null) {
@@ -42,7 +45,7 @@ public class HandCardLoader {
     }
 
     public void addCard(Card card) {
-        handcards.put(card.getCardnummer(), card);
+        handcards.put(card.getUniqueNumber(), card);
     }
 
     public void removeHandcard(int cardid) {
@@ -58,7 +61,7 @@ public class HandCardLoader {
                 if (HubController.getInstance().herocard == null) {
                     System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
                     removeHandcard(cardid[0]);
-                    HeroLoader.getInstance().setHerocard(card, handcardsinstance.get(cardid[0]));
+                    HeroLoader.getInstance().setHerocard(card, pane);
                     HubController.getInstance().setHeroCard(pane);
                     removeINSTHandcard(cardid[0]);
                 } else {
@@ -67,17 +70,19 @@ public class HandCardLoader {
             });
 
             cm.getItems().add(legen);
-            handcardsinstance.put(card.getCardnummer(), pane);
-            pane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-                for (int i = 0; i < handcardsinstance.size(); i++) {
-                    if (handcardsinstance.get(i) != null && handcardsinstance.get(i).equals(pane)) {
-                        System.out.println(handcards.get(i).getCardname());
-                        cardid[0] = handcards.get(i).getCardnummer();
-                        cm.show(pane, event.getScreenX(), event.getScreenY());
-                    }
-                }
+            showCM(cm, pane, cardid);
+        } else if (card.getCardtype().equals(Type.ZAUBER)){
+            final ContextMenu cm = new ContextMenu();
+            MenuItem legen = new MenuItem("Karte benutzen");
+            legen.setOnAction(e -> {
+                    System.out.println("Karte benutzt: " + handcards.get(cardid[0]).getCardname());
+                    removeHandcard(cardid[0]);
+                    removeINSTHandcard(cardid[0]);
             });
+            cm.getItems().add(legen);
+            showCM(cm, pane, cardid);
         }
+        handcardsinstance.put(card.getUniqueNumber(), pane);
     }
 
     public void removeINSTHandcard(int cardid) {
@@ -85,16 +90,30 @@ public class HandCardLoader {
     }
 
     public void loadCards() {
-        handcardsinstance.addListener(new MapChangeListener<Integer, GridPane>() {
-            @Override
-            public void onChanged(Change<? extends Integer, ? extends GridPane> change) {
-                if (change.wasRemoved()) {
-                    HubController.getInstance().removeFromHBox(change.getValueRemoved());
-                }
+        handcardsinstance.addListener((MapChangeListener<Integer, GridPane>) change -> {
+            if (change.wasRemoved()) {
+                HubController.getInstance().removeFromHBox(change.getValueRemoved());
             }
         });
 
 
+    }
+    public void showCM(ContextMenu cm, GridPane pane, int[] cardid) {
+        try {
+            pane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                for (int key : handcardsinstance.keySet()) {
+                    if (handcardsinstance.get(key) != null && handcardsinstance.get(key).equals(pane)) {
+                        System.out.println(handcards.get(key).getCardname());
+                        cardid[0] = handcards.get(key).getUniqueNumber();
+                        cm.show(pane, event.getScreenX(), event.getScreenY());
+                    } else {
+                        System.out.println("Pane does not exist");
+                    }
+                }
+            });
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 
 

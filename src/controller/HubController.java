@@ -36,6 +36,9 @@ public class HubController {
     private BorderPane grave;
     private static HubController instance;
 
+    public static void destroy() {
+        instance = null;
+    }
 
     public void initialize() {
         instance = this;

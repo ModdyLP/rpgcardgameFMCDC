@@ -9,4 +9,6 @@ public interface Card {
     String getCardname();
     int getCardnummer();
     Type getCardtype();
+    int getUniqueNumber();
+    void setUniqueNumber(int number);
 }
