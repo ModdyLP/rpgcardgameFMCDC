@@ -109,9 +109,9 @@ public class HubController {
                 if (cardboxplaces.get(position).equals(true)) {
                     HandCardLoader.getInstance().addCard(card);
                     HandCardLoader.getInstance().addINSTCard(card, pane);
-                    AllCards.getInstance().removePlayCard(card);
                     cardbox.add(pane, position, 0);
                     cardboxplaces.put(position, false);
+                    AllCards.getInstance().removePlayCard(card);
                     break;
                 }
             }

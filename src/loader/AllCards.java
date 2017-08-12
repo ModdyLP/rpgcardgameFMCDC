@@ -68,15 +68,10 @@ public class AllCards {
                 }
             }
             MySQLConnector.close(rs);
-        } catch (
-                Exception ex)
-
-        {
+        } catch (Exception ex) {
             ex.printStackTrace();
         }
-        MainController.getInstance().
-
-                setDEFStatus();
+        MainController.getInstance().setDEFStatus();
     }
     public void splitupCards() {
         try {
