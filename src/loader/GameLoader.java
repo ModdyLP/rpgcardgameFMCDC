@@ -57,6 +57,7 @@ public class GameLoader {
                         Thread.sleep(1000);
                         System.out.println(new Date(System.currentTimeMillis()).toString() + " Game Loop Trigger");
                         checkPlayer();
+                        RoundLoader.getInstance().checkRoundOver();
                     }
                     System.out.println("Task stopped");
                 } catch (Exception ex) {

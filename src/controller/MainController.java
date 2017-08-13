@@ -6,8 +6,10 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
+import javafx.scene.image.Image;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
+import javafx.stage.Stage;
 import loader.GameLoader;
 import loader.GeneralCardLoader;
 import utils.GeneralDialog;
@@ -31,6 +33,13 @@ public class MainController {
 
     @FXML
     public BorderPane mainLayout;
+
+    public void setPrimarystage(Stage primarystage) {
+        this.primarystage = primarystage;
+        this.primarystage.getIcons().add(new Image(MainController.class.getResourceAsStream("/controller/logo.png")));
+    }
+
+    private Stage primarystage;
     private GridPane pane;
 
 
@@ -41,7 +50,7 @@ public class MainController {
     public void initialize() {
         instance = this;
         setDEFStatus();
-        GeneralDialog.littleInfoDialog("Willkommen zu unserem kleinen Kartenspiel. \n" +
+        GeneralDialog.littleInfoDialog("Willkommen zu unserem kleinen Kartenspiel (Proelignis). \n" +
                 "Programmiert und designet beim Code & Design Camp in Frankfurt a.M. von \n" +
                 "Niklas H. \n" +
                 "Maren G. \n" +

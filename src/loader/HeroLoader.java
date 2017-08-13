@@ -7,6 +7,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
+import utils.Utils;
 
 
 /**
@@ -39,15 +40,19 @@ public class HeroLoader {
         legen.setOnAction(e -> {
             if (enemyherocardINST != null) {
                 System.out.println("Karte greift an"+herocard.getCardname());
+                ((HeroCard) enemyherocard).setLivePoints(((HeroCard) enemyherocard).getLivePoints() - Utils.runden(((HeroCard) herocard).getAttackpoints(), ((HeroCard) enemyherocard).getDefendpoints()));
             } else {
                 MainController.getInstance().setStatus("Es ist keine Gegner Karte auf dem Spielfeld");
             }
+            RoundLoader.getInstance().setAttackcounter(RoundLoader.getInstance().getAttackcounter()+1);
         });
 
         cm.getItems().add(legen);
         gridPane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            System.out.println(herocard.getCardname());
-            cm.show(gridPane, event.getScreenX(), event.getScreenY());
+            if (RoundLoader.getInstance().getAttackcounter() < 1) {
+                System.out.println(herocard.getCardname());
+                cm.show(gridPane, event.getScreenX(), event.getScreenY());
+            }
         });
     }
 

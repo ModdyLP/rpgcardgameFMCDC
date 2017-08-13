@@ -26,6 +26,9 @@ public class HubController {
     public GridPane getCardbox() {
         return cardbox;
     }
+    public ObservableMap<Integer, Boolean> getCardboxPos() {
+        return cardboxplaces;
+    }
 
     @FXML
     private GridPane cardbox;
@@ -81,13 +84,14 @@ public class HubController {
         cardboxplaces.put(2, true);
         cardboxplaces.put(3, true);
         draw1.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (GameLoader.getInstance().isIstamzug()) {
+            if (GameLoader.getInstance().isIstamzug() && (RoundLoader.getInstance().getCardcounter() < 1)) {
                 HashMap<Integer, Card> cards = new HashMap<>();
                 cards.putAll(AllCards.getInstance().getSpielCards());
                 Card card = AllCards.getInstance().getRandomCard(new ArrayList<>(cards.values()));
                 if (card != null) {
                     GridPane pane = GeneralCardLoader.loadHandCard(card, cardbox);
                     addCardToHbox(pane, card);
+                    RoundLoader.getInstance().setCardcounter(RoundLoader.getInstance().getCardcounter()+1);
                 } else {
                     MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
                 }
@@ -111,6 +115,7 @@ public class HubController {
                     HandCardLoader.getInstance().addINSTCard(card, pane);
                     cardbox.add(pane, position, 0);
                     cardboxplaces.put(position, false);
+                    card.setPosition(position);
                     AllCards.getInstance().removePlayCard(card);
                     break;
                 }

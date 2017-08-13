@@ -8,7 +8,9 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
+import objects.HeroCard;
 import objects.Type;
+import storage.MySQLConnector;
 
 import java.util.Collection;
 
@@ -49,6 +51,7 @@ public class HandCardLoader {
     }
 
     public void removeHandcard(int cardid) {
+        HubController.getInstance().getCardboxPos().put(handcards.get(cardid).getPosition(), true);
         handcards.remove(cardid);
     }
 
@@ -64,6 +67,12 @@ public class HandCardLoader {
                     HeroLoader.getInstance().setHerocard(card, pane);
                     HubController.getInstance().setHeroCard(pane);
                     removeINSTHandcard(cardid[0]);
+                    HeroCard heroCard = (HeroCard) card;
+                    if (GameLoader.getInstance().getSpielerid() == 1) {
+                        MySQLConnector.getInstance().execute("INSERT INTO `Spieler1` (`kartenpos`, `nr`, `name`, `leben`, `angriff`, `verteidigung`, `bild`, `type`) VALUES ('1', '"+heroCard.getCardnummer()+"', '"+heroCard.getCardname()+"', '"+heroCard.getLivePoints()+"', '"+heroCard.getDefendpoints()+"', '"+heroCard.getAttackpoints()+"', '"+heroCard.getFileurl()+"', 'HELD');");
+                    } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                        MySQLConnector.getInstance().execute("INSERT INTO `Spieler2` (`kartenpos`, `nr`, `name`, `leben`, `angriff`, `verteidigung`, `bild`, `type`) VALUES ('1', '"+heroCard.getCardnummer()+"', '"+heroCard.getCardname()+"', '"+heroCard.getLivePoints()+"', '"+heroCard.getDefendpoints()+"', '"+heroCard.getAttackpoints()+"', '"+heroCard.getFileurl()+"', 'HELD');");
+                    }
                 } else {
                     MainController.getInstance().setStatus("Es ist bereits eine Karte gelegt");
                 }

@@ -1,6 +1,7 @@
 package utils;
 
 import javafx.scene.control.Alert;
+import javafx.scene.image.Image;
 
 /**
  * Created by ModdyLP on 10.08.2017. Website: https://moddylp.de/

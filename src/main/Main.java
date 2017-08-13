@@ -6,6 +6,7 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
@@ -19,7 +20,7 @@ public class Main extends Application {
 
         //Init Main Window
         Parent root = FXMLLoader.load(getClass().getResource("/controller/main.fxml"));
-        primaryStage.setTitle("Das RPG Kartenspiel");
+        primaryStage.setTitle("Proelignis");
         primaryStage.setScene(new Scene(root));
         primaryStage.setMaximized(true);
         primaryStage.show();
@@ -29,6 +30,7 @@ public class Main extends Application {
                 MainController.getInstance().exit();
             }
         });
+        MainController.getInstance().setPrimarystage(primaryStage);
         HandCardLoader.getInstance().loadCards();
     }
 

@@ -1,5 +1,7 @@
 package loader;
 
+import storage.MySQLConnector;
+
 /**
  * Created by ModdyLP on 12.08.2017. Website: https://moddylp.de/
  */
@@ -24,6 +26,20 @@ public class RoundLoader {
 
     public void setAttackcounter(int attackcounter) {
         this.attackcounter = attackcounter;
+    }
+
+    public void checkRoundOver() {
+        System.out.println(getCardcounter()+"   "+getAttackcounter());
+        if (getCardcounter() == 1 && getAttackcounter() == 1) {
+            GameLoader.getInstance().setIstamzug(false);
+            if (GameLoader.getInstance().getSpielerid() == 1) {
+                MySQLConnector.getInstance().execute("UPDATE game SET spielerdran = 2 WHERE id = 1");
+            } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                MySQLConnector.getInstance().execute("UPDATE game SET spielerdran = 1 WHERE id = 1");
+            }
+            cardcounter = 0;
+            attackcounter = 0;
+        }
     }
 
     public static RoundLoader getInstance() {

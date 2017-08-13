@@ -11,4 +11,6 @@ public interface Card {
     Type getCardtype();
     int getUniqueNumber();
     void setUniqueNumber(int number);
+    int getPosition();
+    void setPosition(int position);
 }
