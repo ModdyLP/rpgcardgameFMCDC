@@ -6,6 +6,7 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import objects.Card;
+import objects.HeroCard;
 import storage.MySQLConnector;
 import utils.GeneralDialog;
 
@@ -89,6 +90,8 @@ public class GameLoader {
                     if (set.getInt("spielerdran") == spielerid) {
                         istamzug = true;
                         HeroLoader.getInstance().loadEnemyCard();
+                        HeroLoader.getInstance().checkIfCarddie();
+                        HeroLoader.getInstance().loadHero();
                     }
                 }
                 if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200) {

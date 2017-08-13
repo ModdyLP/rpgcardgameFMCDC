@@ -46,6 +46,11 @@ public class HeroLoader {
             if (enemyherocardINST != null) {
                 System.out.println("Karte greift an"+herocard.getCardname());
                 ((HeroCard) enemyherocard).setLivePoints(((HeroCard) enemyherocard).getLivePoints() - Utils.runden(((HeroCard) herocard).getAttackpoints(), ((HeroCard) enemyherocard).getDefendpoints()));
+                if (GameLoader.getInstance().getSpielerid() == 1) {
+                    MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET leben = '"+((HeroCard) enemyherocard).getLivePoints()+"'");
+                } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                    MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET leben = '"+((HeroCard) enemyherocard).getLivePoints()+"'");
+                }
             } else {
                 MainController.getInstance().setStatus("Es ist keine Gegner Karte auf dem Spielfeld");
             }
@@ -65,11 +70,14 @@ public class HeroLoader {
         return enemyherocard;
     }
     public void checkIfCarddie() {
-        if (((HeroCard) enemyherocard).getLivePoints() <= 0) {
-            HubController.getInstance().sendCardToGraveyard(enemyherocardINST);
-        }
-        if (((HeroCard) herocard).getLivePoints() <= 0) {
-            HubController.getInstance().sendCardToGraveyard(herocardINST);
+        if (enemyherocardINST != null && herocard != null) {
+            System.out.println("ENEMY: " + ((HeroCard) enemyherocard).getLivePoints() + "HERO: " + ((HeroCard) herocard).getLivePoints());
+            if (((HeroCard) enemyherocard).getLivePoints() <= 0) {
+                HubController.getInstance().sendCardToGraveyard(enemyherocardINST);
+            }
+            if (((HeroCard) herocard).getLivePoints() <= 0) {
+                HubController.getInstance().sendCardToGraveyard(herocardINST);
+            }
         }
     }
     public void loadEnemyCard() {
@@ -84,11 +92,34 @@ public class HeroLoader {
                 if (rs.getInt("nr") != 0) {
                     HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(rs.getInt("nr"));
                     card.setLivePoints(rs.getInt("leben"));
-                    HubController.getInstance().setEnemyCard(GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox()));
+                    GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
+                    HubController.getInstance().setEnemyCard(pane);
+                    setEnemyherocard(card, pane);
                 }
             }
         } catch (Exception ex) {
             ex.printStackTrace();
+        }
+    }
+    public void loadHero() {
+        if (herocard != null) {
+            try {
+                ResultSet rs = null;
+                if (GameLoader.getInstance().getSpielerid() == 1) {
+                    rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler1` WHERE kartenpos = 1");
+                } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                    rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler2` WHERE kartenpos = 1");
+                }
+                while (rs != null && rs.next()) {
+                    if (rs.getInt("nr") == herocard.getCardnummer()) {
+                        ((HeroCard) herocard).setLivePoints(rs.getInt("leben"));
+                    } else {
+                        System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + rs.getInt("nr"));
+                    }
+                }
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
         }
     }
 

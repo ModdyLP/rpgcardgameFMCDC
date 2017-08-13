@@ -30,7 +30,7 @@ public class RoundLoader {
     }
 
     public void checkRoundOver() {
-        System.out.println(getCardcounter()+"   "+getAttackcounter());
+        System.out.println("Gezogen: "+getCardcounter()+"   Attackiert: "+getAttackcounter());
         if (getCardcounter() == 1 && getAttackcounter() == 1) {
             GameLoader.getInstance().setIstamzug(false);
             if (GameLoader.getInstance().getSpielerid() == 1) {

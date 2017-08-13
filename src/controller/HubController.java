@@ -23,6 +23,7 @@ public class HubController {
     public GridPane getCardbox() {
         return cardbox;
     }
+
     public ObservableMap<Integer, Boolean> getCardboxPos() {
         return cardboxplaces;
     }
@@ -51,7 +52,7 @@ public class HubController {
 
     public void setSpieler(String spieler) {
         Platform.runLater(() -> this.spieler.setText(spieler));
-           }
+    }
 
     @FXML
     private Label spieler;
@@ -61,13 +62,16 @@ public class HubController {
     }
 
     public void sendCardToGraveyard(GridPane pane) {
-        grave.setCenter(null);
-        grave.setCenter(pane);
+        Platform.runLater(() -> {
+            grave.setCenter(null);
+            grave.setCenter(pane);
+        });
     }
 
     public void setEnemyCard(GridPane pane) {
         Platform.runLater(() -> hero2.setCenter(pane));
     }
+
     public void removeEnemycard() {
         Platform.runLater(() -> hero2.setCenter(null));
     }
@@ -100,18 +104,19 @@ public class HubController {
                 if (card != null) {
                     GridPane pane = GeneralCardLoader.loadHandCard(card, cardbox);
                     addCardToHbox(pane, card);
-                    RoundLoader.getInstance().setCardcounter(RoundLoader.getInstance().getCardcounter()+1);
+                    RoundLoader.getInstance().setCardcounter(RoundLoader.getInstance().getCardcounter() + 1);
                 } else {
                     MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
                 }
             }
         });
         if (GameLoader.getInstance().getSpielerid() == 1) {
-           setSpieler("Spieler 1");
+            setSpieler("Spieler 1");
         } else if (GameLoader.getInstance().getSpielerid() == 2) {
             setSpieler("Spieler 2");
         }
     }
+
     public static HubController getInstance() {
         return instance;
     }
@@ -133,9 +138,11 @@ public class HubController {
             MainController.getInstance().setStatus("Es kann keine Karte gezogen werden");
         }
     }
+
     public void removeFromHBox(GridPane pane) {
-       cardbox.getChildren().removeAll(pane);
+        cardbox.getChildren().removeAll(pane);
     }
+
     public void setHeroCard(GridPane pane) {
         if (herocard == null) {
             hero1.setCenter(pane);
