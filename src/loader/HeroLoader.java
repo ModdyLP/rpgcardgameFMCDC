@@ -1,5 +1,6 @@
 package loader;
 
+import controller.HubController;
 import controller.MainController;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
@@ -7,7 +8,11 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
+import storage.MySQLConnector;
+import utils.GeneralDialog;
 import utils.Utils;
+
+import java.sql.ResultSet;
 
 
 /**
@@ -61,7 +66,25 @@ public class HeroLoader {
     }
     public void checkIfCarddie() {
         if (((HeroCard) enemyherocard).getLivePoints() <= 0) {
-
+            HubController.getInstance().sendCardToGraveyard(enemyherocardINST);
+        }
+        if (((HeroCard) herocard).getLivePoints() <= 0) {
+            HubController.getInstance().sendCardToGraveyard(herocardINST);
+        }
+    }
+    public void loadEnemyCard() {
+        try {
+            ResultSet rs = null;
+            if (GameLoader.getInstance().getSpielerid() == 1) {
+                rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler2` WHERE kartenpos = 1");
+            } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler1` WHERE kartenpos = 1");
+            }
+            while (rs != null && rs.next()) {
+                HubController.getInstance().setEnemyCard(GeneralCardLoader.loadHandCard(new HeroCard(rs.getInt("nr"), rs.getString("name"), rs.getString("bild") + ".png", "", rs.getInt("leben"), rs.getInt("verteidigung"), rs.getInt("angriff")), HubController.getInstance().getCardbox()));
+            }
+        } catch (Exception ex) {
+            ex.printStackTrace();
         }
     }
 

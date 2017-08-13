@@ -50,6 +50,7 @@ public class MySQLConnector {
         return null;
     }
     public void execute(String query) {
+        System.out.println(query);
         try {
             Statement st = readDataBase();
             assert st != null;

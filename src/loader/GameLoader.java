@@ -102,6 +102,7 @@ public class GameLoader {
                                 if (card != null) {
                                     GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
                                     HubController.getInstance().addCardToHbox(pane, card);
+                                    AllCards.getInstance().removePlayCard(card);
                                 } else {
                                     MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
                                 }

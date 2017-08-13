@@ -4,15 +4,12 @@ import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import javafx.fxml.FXML;
-import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Label;
-import javafx.scene.control.MenuItem;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import loader.*;
 import objects.Card;
-import storage.MySQLConnector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -61,6 +58,18 @@ public class HubController {
 
     public Label getSpielerdran() {
         return spielerdran;
+    }
+
+    public void sendCardToGraveyard(GridPane pane) {
+        grave.setCenter(null);
+        grave.setCenter(pane);
+    }
+
+    public void setEnemyCard(GridPane pane) {
+        Platform.runLater(() -> hero2.setCenter(pane));
+    }
+    public void removeEnemycard() {
+        Platform.runLater(() -> hero2.setCenter(null));
     }
 
     public void setSpielerdran(String spielerdran) {

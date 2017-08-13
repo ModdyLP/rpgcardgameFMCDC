@@ -63,16 +63,16 @@ public class HandCardLoader {
             legen.setOnAction(e -> {
                 if (HubController.getInstance().herocard == null) {
                     System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
-                    removeHandcard(cardid[0]);
-                    HeroLoader.getInstance().setHerocard(card, pane);
-                    HubController.getInstance().setHeroCard(pane);
-                    removeINSTHandcard(cardid[0]);
                     HeroCard heroCard = (HeroCard) card;
                     if (GameLoader.getInstance().getSpielerid() == 1) {
                         MySQLConnector.getInstance().execute("INSERT INTO `Spieler1` (`kartenpos`, `nr`, `name`, `leben`, `angriff`, `verteidigung`, `bild`, `type`) VALUES ('1', '"+heroCard.getCardnummer()+"', '"+heroCard.getCardname()+"', '"+heroCard.getLivePoints()+"', '"+heroCard.getDefendpoints()+"', '"+heroCard.getAttackpoints()+"', '"+heroCard.getFileurl()+"', 'HELD');");
                     } else if (GameLoader.getInstance().getSpielerid() == 2) {
                         MySQLConnector.getInstance().execute("INSERT INTO `Spieler2` (`kartenpos`, `nr`, `name`, `leben`, `angriff`, `verteidigung`, `bild`, `type`) VALUES ('1', '"+heroCard.getCardnummer()+"', '"+heroCard.getCardname()+"', '"+heroCard.getLivePoints()+"', '"+heroCard.getDefendpoints()+"', '"+heroCard.getAttackpoints()+"', '"+heroCard.getFileurl()+"', 'HELD');");
                     }
+                    removeHandcard(cardid[0]);
+                    HeroLoader.getInstance().setHerocard(card, pane);
+                    HubController.getInstance().setHeroCard(pane);
+                    removeINSTHandcard(cardid[0]);
                 } else {
                     MainController.getInstance().setStatus("Es ist bereits eine Karte gelegt");
                 }

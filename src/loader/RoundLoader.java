@@ -1,5 +1,6 @@
 package loader;
 
+import objects.HeroCard;
 import storage.MySQLConnector;
 
 /**
@@ -39,6 +40,7 @@ public class RoundLoader {
             }
             cardcounter = 0;
             attackcounter = 0;
+            HeroLoader.getInstance().loadEnemyCard();
         }
     }
 

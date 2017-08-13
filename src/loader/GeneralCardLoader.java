@@ -15,12 +15,12 @@ import java.io.File;
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
  */
 public class GeneralCardLoader {
-    public static GridPane loadHandCard(Card karte, GridPane cardbox) {
+    public static GridPane loadHandCard(Card karte, GridPane pane) {
         try {
             HeroCard herokarte = (HeroCard) karte;
             FXMLLoader loader = new FXMLLoader(MainController.class.getResource("/controller/card.fxml"));
             GridPane card = loader.load();
-            card.setMaxHeight(cardbox.getMaxHeight());
+            card.setMaxHeight(pane.getMaxHeight());
             CardController controller = loader.getController();
             File file = new File(herokarte.getFileurl());
             System.out.println(herokarte.getFileurl());
