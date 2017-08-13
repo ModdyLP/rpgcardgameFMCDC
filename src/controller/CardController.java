@@ -46,6 +46,7 @@ public class CardController {
 
     public void initialize() {
         setLiveListener();
+
     }
 
     public void setLiveListener() {
@@ -60,12 +61,12 @@ public class CardController {
         this.description.setText(description);
     }
 
-    public void setCardname(String name) {
+    public void setCardname(String name, int id) {
         this.cardname.setText(name);
     }
 
     public void setLivepoints(int progress, int cardid) {
-        maxleben = ((HeroCard) AllCards.getInstance().getCardbyID(cardid)).getLivePoints();
+        maxleben = ((HeroCard) AllCards.getInstance().getCardbyID(cardid)).getMaxleben();
         double value = ((double)progress) / ((double)maxleben);
         System.out.println("Leben: " + value + "  " + maxleben + "  " + progress);
         Platform.runLater(() -> livepoints.progressProperty().set(value));

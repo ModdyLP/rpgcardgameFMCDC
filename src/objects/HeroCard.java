@@ -1,5 +1,7 @@
 package objects;
 
+import loader.AllCards;
+
 /**
  * Created by ModdyLP on 10.08.2017. Website: https://moddylp.de/
  */
@@ -7,6 +9,15 @@ public class HeroCard extends MainCard implements Card{
     private int livePoints;
     private int attackpoints;
     private int defendpoints;
+    private int maxleben;
+
+    public int getMaxleben() {
+        return maxleben;
+    }
+
+    private void setMaxleben(int maxleben) {
+        this.maxleben = maxleben;
+    }
 
     public int getLivePoints() {
         return livePoints;
@@ -42,5 +53,6 @@ public class HeroCard extends MainCard implements Card{
         setFileurl(imageurl);
         setCardtype(Type.HELD);
         setDescription(description);
+        setMaxleben(livePoints);
     }
 }

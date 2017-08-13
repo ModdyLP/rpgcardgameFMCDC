@@ -31,7 +31,7 @@ public class GeneralCardLoader {
             Image image = new Image(file.toURI().toString());
             controller.setImage(image);
             controller.setDescription(herokarte.getDescription());
-            controller.setCardname(herokarte.getCardname());
+            controller.setCardname(herokarte.getCardname(), herokarte.getCardnummer());
             controller.setAttackpoints(herokarte.getAttackpoints());
             controller.setLivepoints(herokarte.getLivePoints(), herokarte.getCardnummer());
             controller.setDefendpoints(herokarte.getDefendpoints());

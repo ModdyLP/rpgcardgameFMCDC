@@ -53,6 +53,7 @@ public class HeroLoader {
                 }
             } else {
                 MainController.getInstance().setStatus("Es ist keine Gegner Karte auf dem Spielfeld");
+                System.out.println("Karte greift an"+herocard.getCardname());
             }
             RoundLoader.getInstance().setAttackcounter(RoundLoader.getInstance().getAttackcounter()+1);
         });
@@ -113,6 +114,7 @@ public class HeroLoader {
                 while (rs != null && rs.next()) {
                     if (rs.getInt("nr") == herocard.getCardnummer()) {
                         ((HeroCard) herocard).setLivePoints(rs.getInt("leben"));
+                        System.out.println("Karte sync "+((HeroCard) herocard).getLivePoints()+"  "+((HeroCard) herocard).getCardnummer());
                     } else {
                         System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + rs.getInt("nr"));
                     }

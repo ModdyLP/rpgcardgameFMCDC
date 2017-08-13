@@ -53,10 +53,11 @@ public class GameLoader {
             protected Void call() throws Exception {
                 try {
                     setSpielerid();
-                    AllCards.getInstance().splitupCards();
+                    if (spielerid == 1) {
+                        AllCards.getInstance().splitupCards();
+                    }
                     while (start) {
                         Thread.sleep(1000);
-                        System.out.println(new Date(System.currentTimeMillis()).toString() + " Game Loop Trigger");
                         checkPlayer();
                         RoundLoader.getInstance().checkRoundOver();
                     }
@@ -90,8 +91,8 @@ public class GameLoader {
                     if (set.getInt("spielerdran") == spielerid) {
                         istamzug = true;
                         HeroLoader.getInstance().loadEnemyCard();
-                        HeroLoader.getInstance().checkIfCarddie();
                         HeroLoader.getInstance().loadHero();
+                        HeroLoader.getInstance().checkIfCarddie();
                     }
                 }
                 if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200) {

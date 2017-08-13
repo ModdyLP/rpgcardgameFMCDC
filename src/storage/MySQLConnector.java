@@ -41,7 +41,7 @@ public class MySQLConnector {
 
     public ResultSet getResultofQuery(String query) {
         try {
-            System.out.println(query);
+            //System.out.println(query);
             return readDataBase()
                     .executeQuery(query);
         } catch (Exception ex) {
@@ -50,7 +50,7 @@ public class MySQLConnector {
         return null;
     }
     public void execute(String query) {
-        System.out.println(query);
+        //System.out.println(query);
         try {
             Statement st = readDataBase();
             assert st != null;
