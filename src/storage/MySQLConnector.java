@@ -1,5 +1,6 @@
 package storage;
 
+import controller.MainController;
 import objects.Card;
 
 import java.lang.reflect.Executable;
@@ -34,6 +35,7 @@ public class MySQLConnector {
             // Result set get the result of the SQL quer
 
         } catch (Exception e) {
+            MainController.getInstance().exit();
             e.printStackTrace();
         }
         return null;

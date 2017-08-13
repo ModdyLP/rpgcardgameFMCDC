@@ -75,9 +75,18 @@ public class HeroLoader {
             System.out.println("ENEMY: " + ((HeroCard) enemyherocard).getLivePoints() + "HERO: " + ((HeroCard) herocard).getLivePoints());
             if (((HeroCard) enemyherocard).getLivePoints() <= 0) {
                 HubController.getInstance().sendCardToGraveyard(enemyherocardINST);
+                graveyardloader.getInstance().setGraveyard(enemyherocardINST);
+                graveyardloader.getInstance().setGravecard(enemyherocard);
+                HubController.getInstance().sendCardToGraveyard(graveyardloader.getInstance().getGraveyard());
+                enemyherocard = null;
+                enemyherocardINST = null;
             }
             if (((HeroCard) herocard).getLivePoints() <= 0) {
-                HubController.getInstance().sendCardToGraveyard(herocardINST);
+                graveyardloader.getInstance().setGraveyard(herocardINST);
+                graveyardloader.getInstance().setGravecard(herocard);
+                HubController.getInstance().sendCardToGraveyard(graveyardloader.getInstance().getGraveyard());
+                herocard = null;
+                herocardINST = null;
             }
         }
     }
@@ -103,7 +112,7 @@ public class HeroLoader {
         }
     }
     public void loadHero() {
-        if (herocard != null) {
+        if (herocard != null && herocardINST != null) {
             try {
                 ResultSet rs = null;
                 if (GameLoader.getInstance().getSpielerid() == 1) {

@@ -69,7 +69,7 @@ public class CardController {
         maxleben = ((HeroCard) AllCards.getInstance().getCardbyID(cardid)).getMaxleben();
         double value = ((double)progress) / ((double)maxleben);
         System.out.println("Leben: " + value + "  " + maxleben + "  " + progress);
-        Platform.runLater(() -> livepoints.progressProperty().set(value));
+        Platform.runLater(() -> livepoints.setProgress(value));
     }
 
     public int getLivepoints() {
