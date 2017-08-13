@@ -65,7 +65,8 @@ public class HandCardLoader {
                     System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
                     HeroCard heroCard = (HeroCard) card;
                     if (GameLoader.getInstance().getSpielerid() == 1) {
-                        MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET nr = '"+card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
+                        MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET nr = '"
+                                +card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
                     } else if (GameLoader.getInstance().getSpielerid() == 2) {
                         MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET nr = '"+card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
                     }

@@ -155,8 +155,10 @@ public class GameLoader {
         try {
             if (spielerid == 1) {
                 MySQLConnector.getInstance().execute("UPDATE game SET spieler1 = 500, spielerdran = 0, splitted = 0 WHERE id = 1");
+                MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET nr = '0',name = '0', leben = '0'");
             } else if (spielerid == 2) {
                 MySQLConnector.getInstance().execute("UPDATE game SET spieler2 = 500, spielerdran = 0, splitted = 0 WHERE id = 1");
+                MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET nr = '0',name = '0', leben = '0'");
             } else {
                 System.out.println("No Player ID");
             }
