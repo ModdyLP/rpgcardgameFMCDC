@@ -88,6 +88,7 @@ public class GameLoader {
                 if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200 && set.getInt("spielerdran") != 0) {
                     if (set.getInt("spielerdran") == spielerid) {
                         istamzug = true;
+                        HeroLoader.getInstance().loadEnemyCard();
                     }
                 }
                 if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200) {

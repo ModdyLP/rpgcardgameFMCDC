@@ -40,7 +40,6 @@ public class RoundLoader {
             }
             cardcounter = 0;
             attackcounter = 0;
-            HeroLoader.getInstance().loadEnemyCard();
         }
     }
 

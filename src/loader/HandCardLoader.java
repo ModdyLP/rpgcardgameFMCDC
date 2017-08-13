@@ -65,9 +65,9 @@ public class HandCardLoader {
                     System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
                     HeroCard heroCard = (HeroCard) card;
                     if (GameLoader.getInstance().getSpielerid() == 1) {
-                        MySQLConnector.getInstance().execute("INSERT INTO `Spieler1` (`kartenpos`, `nr`, `name`, `leben`, `angriff`, `verteidigung`, `bild`, `type`) VALUES ('1', '"+heroCard.getCardnummer()+"', '"+heroCard.getCardname()+"', '"+heroCard.getLivePoints()+"', '"+heroCard.getDefendpoints()+"', '"+heroCard.getAttackpoints()+"', '"+heroCard.getFileurl()+"', 'HELD');");
+                        MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET nr = '"+card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
                     } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                        MySQLConnector.getInstance().execute("INSERT INTO `Spieler2` (`kartenpos`, `nr`, `name`, `leben`, `angriff`, `verteidigung`, `bild`, `type`) VALUES ('1', '"+heroCard.getCardnummer()+"', '"+heroCard.getCardname()+"', '"+heroCard.getLivePoints()+"', '"+heroCard.getDefendpoints()+"', '"+heroCard.getAttackpoints()+"', '"+heroCard.getFileurl()+"', 'HELD');");
+                        MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET nr = '"+card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
                     }
                     removeHandcard(cardid[0]);
                     HeroLoader.getInstance().setHerocard(card, pane);

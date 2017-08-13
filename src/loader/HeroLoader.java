@@ -81,7 +81,9 @@ public class HeroLoader {
                 rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler1` WHERE kartenpos = 1");
             }
             while (rs != null && rs.next()) {
-                HubController.getInstance().setEnemyCard(GeneralCardLoader.loadHandCard(new HeroCard(rs.getInt("nr"), rs.getString("name"), rs.getString("bild") + ".png", "", rs.getInt("leben"), rs.getInt("verteidigung"), rs.getInt("angriff")), HubController.getInstance().getCardbox()));
+                HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(rs.getInt("nr"));
+                card.setLivePoints(rs.getInt("leben"));
+                HubController.getInstance().setEnemyCard(GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox()));
             }
         } catch (Exception ex) {
             ex.printStackTrace();
