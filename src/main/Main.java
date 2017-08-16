@@ -6,8 +6,6 @@ import javafx.event.EventHandler;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import loader.HandCardLoader;
@@ -19,7 +17,7 @@ public class Main extends Application {
 
 
         //Init Main Window
-        Parent root = FXMLLoader.load(getClass().getResource("/controller/main.fxml"));
+        Parent root = FXMLLoader.load(MainController.class.getResource("/main.fxml"));
         primaryStage.setTitle("Proelignis");
         primaryStage.setScene(new Scene(root));
         primaryStage.setMaximized(true);

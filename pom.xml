@@ -1,0 +1,92 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
+                      http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- The Basics -->
+    <groupId>de.codecamp</groupId>
+    <artifactId>Proelignis</artifactId>
+    <version>0.1</version>
+    <dependencies>
+        <dependency>
+            <groupId>org.mongodb</groupId>
+            <artifactId>mongo-java-driver</artifactId>
+            <version>3.5.0</version>
+        </dependency>
+        <dependency>
+            <groupId>mysql</groupId>
+            <artifactId>mysql-connector-java</artifactId>
+            <version>5.1.43</version>
+        </dependency>
+    </dependencies>
+
+    <!-- Build Settings -->
+    <build>
+        <outputDirectory>${project.build.directory}/target</outputDirectory>
+        <finalName>${project.artifactId}-${project.version}</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <configuration>
+                    <source>1.8</source>
+                    <target>1.8</target>
+                </configuration>
+            </plugin>
+        </plugins>
+        <testOutputDirectory>${project.build.directory}/test-classes</testOutputDirectory>
+        <sourceDirectory>${project.basedir}/src</sourceDirectory>
+        <testSourceDirectory>${project.basedir}/test</testSourceDirectory>
+        <resources>
+            <resource>
+                <directory>${project.basedir}/resources</directory>
+            </resource>
+        </resources>
+        <testResources>
+            <testResource>
+                <directory>${project.basedir}/test/resources</directory>
+            </testResource>
+        </testResources>
+    </build>
+
+    <!-- More Project Information -->
+    <name>Proelignis</name>
+    <description>Ein Kartenspiel welches eine Mischung aus Quartett und Heartstone ist</description>
+    <url>https://github.com/ModdyLP/rpgcardgameFMCDC</url>
+    <inceptionYear>...</inceptionYear>
+    <developers>
+        <developer>
+            <name>Niklas H.</name>
+        </developer>
+        <developer>
+            <name>Alexander D.</name>
+        </developer>
+    </developers>
+    <contributors>
+        <contributor>
+            <name>Niklas H.</name>
+        </contributor>
+        <contributor>
+            <name>Alexander D.</name>
+        </contributor>
+        <contributor>
+            <name>Maren G.</name>
+        </contributor>
+        <contributor>
+            <name>Jessie L.</name>
+        </contributor>
+        <contributor>
+            <name>Joshua H.</name>
+        </contributor>
+    </contributors>
+
+    <!-- Environment Settings -->
+    <issueManagement>
+        <system>GitHub</system>
+        <url>https://github.com/ModdyLP/rpgcardgameFMCDC/issues</url>
+    </issueManagement>
+    <scm>
+        <url>https://github.com/ModdyLP/rpgcardgameFMCDC</url>
+    </scm>
+</project>

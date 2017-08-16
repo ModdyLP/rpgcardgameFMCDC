@@ -14,11 +14,12 @@ import loader.GameLoader;
 import loader.GeneralCardLoader;
 import utils.GeneralDialog;
 
-import java.io.IOException;
-
 public class MainController {
 
     private static MainController instance;
+
+    private boolean gameisrunning = false;
+
     @FXML
     private Label status;
 
@@ -36,7 +37,7 @@ public class MainController {
 
     public void setPrimarystage(Stage primarystage) {
         this.primarystage = primarystage;
-        this.primarystage.getIcons().add(new Image(MainController.class.getResourceAsStream("/controller/logo.png")));
+        this.primarystage.getIcons().add(new Image(MainController.class.getResourceAsStream("/logo.png")));
     }
 
     private Stage primarystage;
@@ -79,29 +80,32 @@ public class MainController {
         });
     }
     public void restart() {
-        GameLoader.getInstance().setStart(false);
-        setStatus("Lade Hub...");
-        GeneralCardLoader.clearall();
-        if (pane != null) {
-            mainLayout.setCenter(null);
-            HubController.destroy();
-        }
-        MainController.getInstance().setStatus("Starte neu");
-        Platform.runLater(() -> {
-            try {
-                FXMLLoader hubloader = new FXMLLoader(getClass().getResource("/controller/hub.fxml"));
-                pane = hubloader.load();
-                pane.setMinWidth(mainLayout.getWidth()-80);
-                pane.setMinHeight(mainLayout.getHeight()-80);
-                HubController controller = hubloader.getController();
-                mainLayout.setCenter(pane);
-                setDEFStatus();
-            } catch (Exception e) {
-                e.printStackTrace();
+        if (!gameisrunning) {
+            GameLoader.getInstance().setStart(false);
+            setStatus("Lade Hub...");
+            GeneralCardLoader.clearall();
+            if (pane != null) {
+                mainLayout.setCenter(null);
+                HubController.destroy();
             }
-        });
-        GameLoader.getInstance().setStart(true);
-        GameLoader.getInstance().gameloop();
+            MainController.getInstance().setStatus("Starte...");
+            Platform.runLater(() -> {
+                try {
+                    FXMLLoader hubloader = new FXMLLoader(getClass().getResource("/hub.fxml"));
+                    pane = hubloader.load();
+                    pane.setMinWidth(mainLayout.getWidth() - 80);
+                    pane.setMinHeight(mainLayout.getHeight() - 80);
+                    HubController controller = hubloader.getController();
+                    mainLayout.setCenter(pane);
+                    setDEFStatus();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            });
+            GameLoader.getInstance().setStart(true);
+            GameLoader.getInstance().gameloop();
+            gameisrunning = true;
+        }
     }
 
 }

@@ -43,7 +43,7 @@
          <children>
             <ImageView fitHeight="120.0" fitWidth="120.0" pickOnBounds="true" preserveRatio="true">
                <image>
-                  <Image url="@../../exportpng/elfe.png" />
+                  <Image url="@../exportpng/elfe.png" />
                </image>
                <viewport>
                   <Rectangle2D />

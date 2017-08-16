@@ -27,16 +27,11 @@ public class GameLoader {
 
     private int spielerid = 0;
 
-    public boolean isStart() {
-        return start;
-    }
-
     public void setStart(boolean start) {
         this.start = start;
     }
 
     private boolean start = true;
-    private static GameLoader loade;
     private static GameLoader instance;
 
     public static GameLoader getInstance() {
