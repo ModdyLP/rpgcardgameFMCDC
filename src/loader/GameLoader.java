@@ -91,8 +91,8 @@ public class GameLoader {
                         istamzug = true;
                         HeroLoader.getInstance().loadEnemyCard();
                         HeroLoader.getInstance().loadHero();
-                        HeroLoader.getInstance().checkIfCarddie();
                     }
+                    HeroLoader.getInstance().checkIfCarddie();
                 }
                 if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200) {
                     if (HandCardLoader.getInstance().getAllHandcards().size() == 0 && doc.getInteger("splitted") == 1) {

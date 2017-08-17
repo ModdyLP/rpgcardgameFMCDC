@@ -66,7 +66,7 @@ public class AllCards {
             ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Karten");
             for (Document doc : documents) {
                 if (doc.getString("type").equals("HELD")) {
-                    System.out.println("Load Card: "+doc.getString("name"));
+                    System.out.println("Load Card: " + doc.getString("name"));
                     addCard(new HeroCard(doc.getInteger("kartenid"), doc.getString("name"), doc.getString("bild") + ".png", doc.getString("beschreibung"), doc.getInteger("leben"), doc.getInteger("verteidigung"), doc.getInteger("angriff")));
                 }
             }
@@ -121,7 +121,12 @@ public class AllCards {
 
     public void loadStapelfromplayer() {
         try {
-            ArrayList<Document> documents = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", "player1")).into(new ArrayList<>());
+            ArrayList<Document> documents = new ArrayList<>();
+            if (GameLoader.getInstance().getSpielerid() == 1) {
+                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", "player1")).into(new ArrayList<>()));
+            } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", "player2")).into(new ArrayList<>()));
+            }
             for (Document doc : documents) {
                 Card card = getCardbyID(doc.getInteger("cardid"));
                 addPlayCard(card);
@@ -186,6 +191,7 @@ public class AllCards {
         }
         return card;
     }
+
     public Card getRandomCard(ArrayList<Card> cardList) {
         Card card = null;
         int tries = 0;
@@ -193,7 +199,7 @@ public class AllCards {
             card = AllCards.getInstance().randomcard(cardList);
             tries++;
         }
-        System.out.println("Random Card("+tries+"): "+card.getCardname()+" "+card.getCardnummer());
+        System.out.println("Random Card(" + tries + "): " + card.getCardname() + " " + card.getCardnummer());
         return card;
     }
 }
