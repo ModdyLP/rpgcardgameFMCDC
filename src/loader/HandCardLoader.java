@@ -10,6 +10,9 @@ import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
 import objects.Type;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import storage.MongoDBConnector;
 import storage.MySQLConnector;
 
 import java.util.Collection;
@@ -37,6 +40,9 @@ public class HandCardLoader {
     public Collection<GridPane> getAllHandcards() {
         return handcardsinstance.values();
     }
+    public Collection<Card> getAllHandcardsVa() {
+        return handcards.values();
+    }
 
     public Card getHandCardbyID(int cardid) {
         return handcards.get(cardid);
@@ -61,21 +67,21 @@ public class HandCardLoader {
             final ContextMenu cm = new ContextMenu();
             MenuItem legen = new MenuItem("Karte legen");
             legen.setOnAction(e -> {
-                if (HubController.getInstance().herocard == null) {
+                if (HeroLoader.getInstance().getHerocard() == null) {
                     System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
                     HeroCard heroCard = (HeroCard) card;
                     if (GameLoader.getInstance().getSpielerid() == 1) {
-                        MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET nr = '"
-                                +card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                                new Document("$set", new Document("player1herocard", card.getCardnummer()).append("player1herocardleben", heroCard.getLivePoints())));
                     } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                        MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET nr = '"+card.getCardnummer()+"',name = '"+heroCard.getCardname()+"', leben = '"+heroCard.getLivePoints()+"'");
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                                new Document("$set", new Document("player2herocard", card.getCardnummer()).append("player2herocardleben", heroCard.getLivePoints())));
                     }
                     removeHandcard(cardid[0]);
                     HeroLoader.getInstance().setHerocard(card, pane);
-                    HubController.getInstance().setHeroCard(pane);
                     removeINSTHandcard(cardid[0]);
                 } else {
-                    MainController.getInstance().setStatus("Es ist bereits eine Karte gelegt");
+                    MainController.getInstance().setStatus("Es ist bereits eine Karte gelegt: ");
                 }
             });
 
@@ -115,11 +121,8 @@ public class HandCardLoader {
                 if (GameLoader.getInstance().isIstamzug()) {
                     for (int key : handcardsinstance.keySet()) {
                         if (handcardsinstance.get(key) != null && handcardsinstance.get(key).equals(pane)) {
-                            System.out.println(handcards.get(key).getCardname());
                             cardid[0] = handcards.get(key).getUniqueNumber();
                             cm.show(pane, event.getScreenX(), event.getScreenY());
-                        } else {
-                            System.out.println("Pane does not exist");
                         }
                     }
                 }

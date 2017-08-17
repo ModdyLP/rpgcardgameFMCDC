@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import loader.GameLoader;
 import loader.GeneralCardLoader;
+import storage.MongoDBConnector;
 import utils.GeneralDialog;
 
 public class MainController {
@@ -76,6 +77,7 @@ public class MainController {
             GameLoader.getInstance().setStart(false);
             GameLoader.getInstance().logout();
             GeneralDialog.logout();
+            MongoDBConnector.getInstance().close();
             System.exit(0);
         });
     }

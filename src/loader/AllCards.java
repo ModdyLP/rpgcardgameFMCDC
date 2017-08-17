@@ -1,19 +1,20 @@
 package loader;
 
+import com.mongodb.bulk.BulkWriteResult;
+import com.mongodb.client.model.InsertOneModel;
+import com.mongodb.client.model.WriteModel;
 import controller.MainController;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableMap;
 import objects.Card;
 import objects.HeroCard;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import storage.MongoDBConnector;
 import storage.MySQLConnector;
 
-import java.sql.Array;
 import java.sql.ResultSet;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Random;
-import java.util.concurrent.ThreadLocalRandom;
+import java.util.*;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
@@ -46,6 +47,7 @@ public class AllCards {
         cards.put(cardnummer, card);
         cardnummer++;
     }
+
     public void addPlayCard(Card card) {
         spielercards.put(card.getUniqueNumber(), card);
     }
@@ -53,6 +55,7 @@ public class AllCards {
     public void removeCard(Card card) {
         cards.remove(card.getCardnummer());
     }
+
     public void removePlayCard(Card card) {
         spielercards.remove(card.getCardnummer());
     }
@@ -60,73 +63,87 @@ public class AllCards {
     public void loadCards() {
         try {
             MainController.getInstance().setStatus("Loading Cards...");
-            ResultSet rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM Karten");
-            while (rs.next()) {
-                if (rs.getString("type").equals("HELD")) {
-                    System.out.print(rs.getString("name")+"\n");
-                    addCard(new HeroCard(rs.getInt("nr"), rs.getString("name"), rs.getString("bild") + ".png", rs.getString("beschreibung"), rs.getInt("leben"), rs.getInt("verteidigung"), rs.getInt("angriff")));
+            ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Karten");
+            for (Document doc : documents) {
+                if (doc.getString("type").equals("HELD")) {
+                    System.out.println("Load Card: "+doc.getString("name"));
+                    addCard(new HeroCard(doc.getInteger("kartenid"), doc.getString("name"), doc.getString("bild") + ".png", doc.getString("beschreibung"), doc.getInteger("leben"), doc.getInteger("verteidigung"), doc.getInteger("angriff")));
                 }
             }
-            MySQLConnector.close(rs);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         MainController.getInstance().setDEFStatus();
     }
+
     public void splitupCards() {
         try {
             MainController.getInstance().setStatus("Verteile Karten");
-            MySQLConnector.getInstance().execute("DELETE FROM cardtoplayer WHERE 1=1");
+            HashMap<Integer, Card> splitupcards = new HashMap<>();
             int id = 1;
             int zahler = 0;
-            HashMap<Integer, Card> splitupcards = new HashMap<>();
-            ArrayList<Integer> player1 = new ArrayList<>();
-            ArrayList<Integer> player2 = new ArrayList<>();
+            MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").drop();
+            ArrayList<WriteModel<Document>> player1 = new ArrayList<>();
+            ArrayList<WriteModel<Document>> player2 = new ArrayList<>();
             splitupcards.putAll(cards);
             while (splitupcards.size() > 0) {
                 Card card = getRandomCard(new ArrayList<>(splitupcards.values()));
                 System.out.println("Verteile Karte(" + id + "): " + card.getCardnummer());
                 if (id == 1) {
-                    player1.add(card.getCardnummer());
+                    player1.add(new InsertOneModel<>(new Document("playername", "player1")
+                            .append("playerid", new ObjectId("599550c53d6c11d66470145c"))
+                            .append("lobby", new ObjectId("599550c53d6c00d66470145c"))
+                            .append("cardid", card.getCardnummer())));
                     id = 2;
                 } else if (id == 2) {
-                    player2.add(card.getCardnummer());
+                    player2.add(new InsertOneModel<>(new Document("playername", "player2")
+                            .append("playerid", new ObjectId("599550c53d6c22d66470145c"))
+                            .append("lobby", new ObjectId("599550c53d6c00d66470145c"))
+                            .append("cardid", card.getCardnummer())));
                     id = 1;
                 }
                 splitupcards.remove(card.getUniqueNumber());
             }
-            MySQLConnector.getInstance().insertMany(player1, 1);
-            MySQLConnector.getInstance().insertMany(player2, 2);
-            MainController.getInstance().setStatus("Karten wurden verteilt");
-            MySQLConnector.getInstance().execute("UPDATE game SET splitted = 1 WHERE id = 1");
+            BulkWriteResult bulkWriteResult = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").bulkWrite(player1);
+            BulkWriteResult bulkWriteResult2 = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").bulkWrite(player2);
+            if (bulkWriteResult != null && bulkWriteResult2 != null) {
+                MainController.getInstance().setStatus("Karten wurden verteilt");
+            } else {
+                MainController.getInstance().setStatus("Karten wurden nicht verteilt");
+            }
+            MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                    new Document("$set", new Document("splitted", 1)));
+
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
+
     public void loadStapelfromplayer() {
         try {
-            ResultSet rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM cardtoplayer WHERE playerid = " + GameLoader.getInstance().getSpielerid() + ";");
-            while (rs.next()) {
-                Card card = getCardbyID(rs.getInt("cardid"));
+            ArrayList<Document> documents = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", "player1")).into(new ArrayList<>());
+            for (Document doc : documents) {
+                Card card = getCardbyID(doc.getInteger("cardid"));
                 addPlayCard(card);
             }
-            MySQLConnector.close(rs);
-            System.out.println("Stapelgröße: "+spielercards.size());
+            System.out.println("Stapelgröße: " + spielercards.size());
         } catch (Exception ex) {
             ex.printStackTrace();
         }
         MainController.getInstance().setStatus("Stapel geladen");
     }
+
     public Card getCardbyID(int cardid) {
-        for (Card card: cards.values()) {
+        for (Card card : cards.values()) {
             if (card.getCardnummer() == cardid) {
                 return card;
             }
         }
         return null;
     }
+
     public Card getCardbyUID(int cardid) {
-        for (Card card: cards.values()) {
+        for (Card card : cards.values()) {
             if (card.getUniqueNumber() == cardid) {
                 return card;
             }
@@ -138,7 +155,7 @@ public class AllCards {
         return spielercards;
     }
 
-    public Card getRandomCard(ArrayList<Card> cards) {
+    private Card randomcard(ArrayList<Card> cards) {
         Random rand = new Random();
         int value = 0;
         if (cards.size() == 1) {
@@ -146,27 +163,37 @@ public class AllCards {
         } else if (cards.size() < 1) {
             return null;
         } else {
-            value = rand.nextInt(cards.size()-1);
+            value = rand.nextInt(cards.size() - 1);
         }
 
         Card card = cards.get(value);
         int zahler1 = 1;
         while (card == null) {
-            if ((value-zahler1) < cards.size()-1) {
-                card = cards.get(value-zahler1);
+            if ((value - zahler1) < cards.size() - 1) {
+                card = cards.get(value - zahler1);
                 if (card != null) {
                     return card;
                 }
             }
-            if ((value-zahler1) > 0){
-                card = cards.get(value-zahler1);
+            if ((value - zahler1) > 0) {
+                card = cards.get(value - zahler1);
                 if (card != null) {
                     return card;
                 }
             }
             zahler1++;
-            System.out.println("Zähler: "+zahler1+" || "+cards.size());
+            System.out.println("Zähler: " + zahler1 + " || " + cards.size());
         }
+        return card;
+    }
+    public Card getRandomCard(ArrayList<Card> cardList) {
+        Card card = null;
+        int tries = 0;
+        while (card == null) {
+            card = AllCards.getInstance().randomcard(cardList);
+            tries++;
+        }
+        System.out.println("Random Card("+tries+"): "+card.getCardname()+" "+card.getCardnummer());
         return card;
     }
 }

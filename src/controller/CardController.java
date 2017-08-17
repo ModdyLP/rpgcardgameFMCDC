@@ -50,7 +50,7 @@ public class CardController {
     }
 
     public void setLiveListener() {
-        livepoints.progressProperty().addListener((observable, oldValue, newValue) -> System.out.println("Damage: " + oldValue + "  " + newValue));
+        livepoints.progressProperty().addListener((observable, oldValue, newValue) -> System.out.println("Live: " + oldValue + "  " + newValue));
     }
 
     public void setImage(Image image) {

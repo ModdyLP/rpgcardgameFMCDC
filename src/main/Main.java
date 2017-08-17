@@ -9,13 +9,14 @@ import javafx.scene.Scene;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 import loader.HandCardLoader;
+import storage.MongoDBConnector;
 
 public class Main extends Application {
 
     @Override
     public void start(Stage primaryStage) throws Exception{
 
-
+        MongoDBConnector.getInstance().connect();
         //Init Main Window
         Parent root = FXMLLoader.load(MainController.class.getResource("/main.fxml"));
         primaryStage.setTitle("Proelignis");

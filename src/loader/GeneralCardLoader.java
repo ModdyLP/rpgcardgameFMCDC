@@ -22,11 +22,11 @@ public class GeneralCardLoader {
             card.setMaxHeight(pane.getMaxHeight());
             CardController controller = loader.getController();
             File file = new File(herokarte.getFileurl());
-            System.out.println(herokarte.getFileurl());
+
             if (!file.exists()) {
                 file = new File(MainController.class.getResource("/Fragezeichen.png").getPath());
             }
-            System.out.println(file.getAbsolutePath());
+            System.out.println("Load Image from:"+ herokarte.getFileurl()+" Found: "+file.getAbsolutePath());
             Image image = new Image(file.toURI().toString());
             controller.setImage(image);
             controller.setDescription(herokarte.getDescription());

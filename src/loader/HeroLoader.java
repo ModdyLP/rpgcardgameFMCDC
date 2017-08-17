@@ -8,11 +8,15 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import storage.MongoDBConnector;
 import storage.MySQLConnector;
 import utils.GeneralDialog;
 import utils.Utils;
 
 import java.sql.ResultSet;
+import java.util.ArrayList;
 
 
 /**
@@ -44,12 +48,14 @@ public class HeroLoader {
         MenuItem legen = new MenuItem("Angreifen");
         legen.setOnAction(e -> {
             if (enemyherocardINST != null) {
-                System.out.println("Karte greift an"+herocard.getCardname());
+                System.out.println("Karte greift an: "+herocard.getCardname());
                 ((HeroCard) enemyherocard).setLivePoints(((HeroCard) enemyherocard).getLivePoints() - Utils.runden(((HeroCard) herocard).getAttackpoints(), ((HeroCard) enemyherocard).getDefendpoints()));
                 if (GameLoader.getInstance().getSpielerid() == 1) {
-                    MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET leben = '"+((HeroCard) enemyherocard).getLivePoints()+"'");
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                            new Document("$set", new Document("player2herocardleben", ((HeroCard) enemyherocard).getLivePoints())));
                 } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                    MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET leben = '"+((HeroCard) enemyherocard).getLivePoints()+"'");
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                            new Document("$set", new Document("player1herocardleben", ((HeroCard) enemyherocard).getLivePoints())));
                 }
             } else {
                 MainController.getInstance().setStatus("Es ist keine Gegner Karte auf dem Spielfeld");
@@ -61,10 +67,10 @@ public class HeroLoader {
         cm.getItems().add(legen);
         gridPane.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
             if (RoundLoader.getInstance().getAttackcounter() < 1) {
-                System.out.println(herocard.getCardname());
                 cm.show(gridPane, event.getScreenX(), event.getScreenY());
             }
         });
+        HubController.getInstance().setHeroCard(gridPane);
     }
 
     public Card getEnemyherocard() {
@@ -74,37 +80,35 @@ public class HeroLoader {
         if (enemyherocardINST != null && herocard != null) {
             System.out.println("ENEMY: " + ((HeroCard) enemyherocard).getLivePoints() + "HERO: " + ((HeroCard) herocard).getLivePoints());
             if (((HeroCard) enemyherocard).getLivePoints() <= 0) {
-                HubController.getInstance().sendCardToGraveyard(enemyherocardINST);
+                HubController.getInstance().sendCardToGraveyard(enemyherocardINST, enemyherocard);
                 graveyardloader.getInstance().setGraveyard(enemyherocardINST);
                 graveyardloader.getInstance().setGravecard(enemyherocard);
-                HubController.getInstance().sendCardToGraveyard(graveyardloader.getInstance().getGraveyard());
-                enemyherocard = null;
-                enemyherocardINST = null;
             }
             if (((HeroCard) herocard).getLivePoints() <= 0) {
                 graveyardloader.getInstance().setGraveyard(herocardINST);
                 graveyardloader.getInstance().setGravecard(herocard);
-                HubController.getInstance().sendCardToGraveyard(graveyardloader.getInstance().getGraveyard());
-                herocard = null;
-                herocardINST = null;
+                HubController.getInstance().sendCardToGraveyard(herocardINST, herocard);
             }
         }
     }
     public void loadEnemyCard() {
         try {
-            ResultSet rs = null;
-            if (GameLoader.getInstance().getSpielerid() == 1) {
-                rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler2` WHERE kartenpos = 1");
-            } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler1` WHERE kartenpos = 1");
-            }
-            while (rs != null && rs.next()) {
-                if (rs.getInt("nr") != 0) {
-                    HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(rs.getInt("nr"));
-                    card.setLivePoints(rs.getInt("leben"));
-                    GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
-                    HubController.getInstance().setEnemyCard(pane);
-                    setEnemyherocard(card, pane);
+            ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
+            for (Document doc : documents) {
+                if (GameLoader.getInstance().getSpielerid() == 1) {
+                    if (doc.getInteger("player2herocard") != null && doc.getInteger("player2herocard") != 0) {
+                        HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(doc.getInteger("player2herocard"));
+                        card.setLivePoints(doc.getInteger("player2herocardleben"));
+                        GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
+                        setEnemyherocard(card, pane);
+                    }
+                } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                    if (doc.getInteger("player1herocard") != null && doc.getInteger("player1herocard") != 0) {
+                        HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(doc.getInteger("player1herocard"));
+                        card.setLivePoints(doc.getInteger("player1herocardleben"));
+                        GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
+                        setEnemyherocard(card, pane);
+                    }
                 }
             }
         } catch (Exception ex) {
@@ -114,18 +118,22 @@ public class HeroLoader {
     public void loadHero() {
         if (herocard != null && herocardINST != null) {
             try {
-                ResultSet rs = null;
-                if (GameLoader.getInstance().getSpielerid() == 1) {
-                    rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler1` WHERE kartenpos = 1");
-                } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                    rs = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM `Spieler2` WHERE kartenpos = 1");
-                }
-                while (rs != null && rs.next()) {
-                    if (rs.getInt("nr") == herocard.getCardnummer()) {
-                        ((HeroCard) herocard).setLivePoints(rs.getInt("leben"));
-                        System.out.println("Karte sync "+((HeroCard) herocard).getLivePoints()+"  "+((HeroCard) herocard).getCardnummer());
-                    } else {
-                        System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + rs.getInt("nr"));
+                ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
+                for (Document doc : documents) {
+                    if (GameLoader.getInstance().getSpielerid() == 1) {
+                        if (doc.getInteger("player1herocard") == herocard.getCardnummer()) {
+                            ((HeroCard) herocard).setLivePoints(doc.getInteger("player1herocardleben"));
+                            System.out.println("Karte sync " + ((HeroCard) herocard).getLivePoints() + "  " + ((HeroCard) herocard).getCardnummer());
+                        } else {
+                            System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + doc.getInteger("player1herocard"));
+                        }
+                    } else  if (GameLoader.getInstance().getSpielerid() == 1) {
+                        if (doc.getInteger("player2herocard") == herocard.getCardnummer()) {
+                            ((HeroCard) herocard).setLivePoints(doc.getInteger("player2herocardleben"));
+                            System.out.println("Karte sync " + ((HeroCard) herocard).getLivePoints() + "  " + ((HeroCard) herocard).getCardnummer());
+                        } else {
+                            System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + doc.getInteger("player2herocard"));
+                        }
                     }
                 }
             } catch (Exception ex) {
@@ -137,5 +145,6 @@ public class HeroLoader {
     public void setEnemyherocard(Card enemyherocard, GridPane gridPane) {
         this.enemyherocard = enemyherocard;
         this.enemyherocardINST = gridPane;
+        HubController.getInstance().setEnemyCard(gridPane);
     }
 }

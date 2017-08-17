@@ -1,6 +1,9 @@
 package loader;
 
 import objects.HeroCard;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import storage.MongoDBConnector;
 import storage.MySQLConnector;
 
 /**
@@ -34,9 +37,11 @@ public class RoundLoader {
         if (getCardcounter() == 1 && getAttackcounter() == 1) {
             GameLoader.getInstance().setIstamzug(false);
             if (GameLoader.getInstance().getSpielerid() == 1) {
-                MySQLConnector.getInstance().execute("UPDATE game SET spielerdran = 2 WHERE id = 1");
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                        new Document("$set", new Document("current", 2)));
             } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                MySQLConnector.getInstance().execute("UPDATE game SET spielerdran = 1 WHERE id = 1");
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                        new Document("$set", new Document("current", 1)));
             }
             cardcounter = 0;
             attackcounter = 0;

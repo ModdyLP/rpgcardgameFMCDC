@@ -7,6 +7,9 @@ import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import objects.Card;
 import objects.HeroCard;
+import org.bson.Document;
+import org.bson.types.ObjectId;
+import storage.MongoDBConnector;
 import storage.MySQLConnector;
 import utils.GeneralDialog;
 
@@ -69,49 +72,52 @@ public class GameLoader {
 
     private void checkPlayer() {
         try {
-            ResultSet set = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM game");
-            while (set.next()) {
-                if (set.getInt("spielerdran") != 0) {
-                    HubController.getInstance().setSpielerdran("Spieler "+set.getInt("spielerdran")+" ist dran.");
+            ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
+            for (Document doc : documents) {
+                if (doc.getInteger("current") != 0) {
+                    HubController.getInstance().setSpielerdran("Spieler "+doc.getInteger("current")+" ist dran.");
                 }
-                if (set.getInt("spieler1") == 500 && spielerid == 2) {
+                if (doc.getInteger("player1") == 500 && spielerid == 2) {
                     MainController.getInstance().exit();
-                } else if (set.getInt("spieler2") == 500 && spielerid == 1) {
+                } else if (doc.getInteger("player2") == 500 && spielerid == 1) {
                     MainController.getInstance().exit();
                 }
-                if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200 && set.getInt("spielerdran") == 0) {
-                    MySQLConnector.getInstance().execute("UPDATE game SET spielerdran = 1 WHERE id = 1");
+                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200 && doc.getInteger("current") == 0) {
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                            new Document("$set", new Document("current", 1)));
                 }
-                if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200 && set.getInt("spielerdran") != 0) {
-                    if (set.getInt("spielerdran") == spielerid) {
+                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200 && doc.getInteger("current") != 0) {
+                    if (doc.getInteger("current") == spielerid && !istamzug) {
                         istamzug = true;
                         HeroLoader.getInstance().loadEnemyCard();
                         HeroLoader.getInstance().loadHero();
                         HeroLoader.getInstance().checkIfCarddie();
                     }
                 }
-                if (set.getInt("spieler1") == 200 && set.getInt("spieler2") == 200) {
-                    if (HandCardLoader.getInstance().getAllHandcards().size() == 0 && set.getInt("splitted") == 1) {
+                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200) {
+                    if (HandCardLoader.getInstance().getAllHandcards().size() == 0 && doc.getInteger("splitted") == 1) {
                         System.out.println("Lade Handkarten");
                         Platform.runLater(() -> {
                             AllCards.getInstance().loadStapelfromplayer();
                             HashMap<Integer, Card> cards = new HashMap<>();
                             cards.putAll(AllCards.getInstance().getSpielCards());
-                            for (int i = 0; i < 2; i++) {
-                                Card card = AllCards.getInstance().getRandomCard(new ArrayList<>(cards.values()));
-                                if (card != null) {
+                            int counter = 0;
+                            while (counter < 2) {
+                                boolean found = false;
+                                while (!found) {
+                                    Card card = AllCards.getInstance().getRandomCard(new ArrayList<>(cards.values()));
                                     GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
-                                    HubController.getInstance().addCardToHbox(pane, card);
-                                    AllCards.getInstance().removePlayCard(card);
-                                } else {
-                                    MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
+                                    if (HubController.getInstance().addCardToHbox(pane, card)) {
+                                        found = true;
+                                        counter++;
+                                        AllCards.getInstance().getSpielCards().remove(card.getUniqueNumber());
+                                    }
                                 }
                             }
                         });
                     }
                 }
             }
-            MySQLConnector.close(set);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -128,15 +134,17 @@ public class GameLoader {
 
     public void setSpielerid() {
         try {
-            ResultSet set = MySQLConnector.getInstance().getResultofQuery("SELECT * FROM game");
-            while (set != null && set.next()) {
-                System.out.println("Spieler 1: "+set.getInt("spieler1")+" | Spieler2: "+set.getInt("spieler2"));
-                if (set.getInt("spieler1") != 200) {
-                    MySQLConnector.getInstance().execute("UPDATE game SET spieler1 = 200, spieler2 = 0 WHERE id = 1");
+            ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
+            for (Document doc : documents) {
+                System.out.println("Spieler 1: "+doc.getInteger("player1")+" | Spieler2: "+doc.getInteger("player2"));
+                if (doc.getInteger("player1") != 200) {
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                            new Document("$set", new Document("player1", 200).append("player2", 0)));
                     spielerid = 1;
                     HubController.getInstance().setSpieler("Du: Spieler 1");
-                } else if (set.getInt("spieler2") != 200) {
-                    MySQLConnector.getInstance().execute("UPDATE game SET spieler2 = 200 WHERE id = 1");
+                } else if (doc.getInteger("player2") != 200) {
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                            new Document("$set", new Document("player2", 200)));
                     spielerid = 2;
                     HubController.getInstance().setSpieler("Du: Spieler 2");
                 } else {
@@ -144,7 +152,6 @@ public class GameLoader {
                     System.out.println("Alle Spieler sind da");
                 }
             }
-            MySQLConnector.close(set);
         } catch (Exception ex) {
             ex.printStackTrace();
         }
@@ -153,11 +160,15 @@ public class GameLoader {
     public void logout() {
         try {
             if (spielerid == 1) {
-                MySQLConnector.getInstance().execute("UPDATE game SET spieler1 = 500, spielerdran = 0, splitted = 0 WHERE id = 1");
-                MySQLConnector.getInstance().execute("UPDATE `Spieler1` SET nr = '0',name = '0', leben = '0'");
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                        new Document("$set", new Document("player1", 500).append("current", 0).append("splitted", 0)));
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                        new Document("$unset", new Document("player1herocard", "").append("player1herocardleben", "")));
             } else if (spielerid == 2) {
-                MySQLConnector.getInstance().execute("UPDATE game SET spieler2 = 500, spielerdran = 0, splitted = 0 WHERE id = 1");
-                MySQLConnector.getInstance().execute("UPDATE `Spieler2` SET nr = '0',name = '0', leben = '0'");
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                        new Document("$set", new Document("player2", 500).append("current", 0).append("splitted", 0)));
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                        new Document("$unset", new Document("player2herocard", "").append("player2herocardleben", "")));
             } else {
                 System.out.println("No Player ID");
             }
