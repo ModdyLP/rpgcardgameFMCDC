@@ -34,6 +34,7 @@ public class GeneralCardLoader {
             controller.setAttackpoints(herokarte.getAttackpoints());
             controller.setLivepoints(herokarte.getLivePoints(), herokarte.getCardnummer());
             controller.setDefendpoints(herokarte.getDefendpoints());
+            herokarte.setController(controller);
             return card;
         } catch (Exception ex) {
             ex.printStackTrace();

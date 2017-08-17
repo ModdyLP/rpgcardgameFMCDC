@@ -123,14 +123,14 @@ public class HeroLoader {
                     if (GameLoader.getInstance().getSpielerid() == 1) {
                         if (doc.getInteger("player1herocard") == herocard.getCardnummer()) {
                             ((HeroCard) herocard).setLivePoints(doc.getInteger("player1herocardleben"));
-                            System.out.println("Karte sync " + ((HeroCard) herocard).getLivePoints() + "  " + ((HeroCard) herocard).getCardnummer());
+                            System.out.println("Karte sync " + ((HeroCard) herocard).getController().getLivepoints() + "  " + ((HeroCard) herocard).getCardnummer());
                         } else {
                             System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + doc.getInteger("player1herocard"));
                         }
-                    } else  if (GameLoader.getInstance().getSpielerid() == 1) {
+                    } else  if (GameLoader.getInstance().getSpielerid() == 2) {
                         if (doc.getInteger("player2herocard") == herocard.getCardnummer()) {
                             ((HeroCard) herocard).setLivePoints(doc.getInteger("player2herocardleben"));
-                            System.out.println("Karte sync " + ((HeroCard) herocard).getLivePoints() + "  " + ((HeroCard) herocard).getCardnummer());
+                            System.out.println("Karte sync " + ((HeroCard) herocard).getController().getLivepoints() + "  " + ((HeroCard) herocard).getCardnummer());
                         } else {
                             System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + doc.getInteger("player2herocard"));
                         }

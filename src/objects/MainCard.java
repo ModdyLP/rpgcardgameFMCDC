@@ -1,5 +1,7 @@
 package objects;
 
+import controller.CardController;
+
 /**
  * Created by ModdyLP on 10.08.2017. Website: https://moddylp.de/
  */
@@ -12,6 +14,16 @@ public class MainCard {
     private String description;
     private String fileurl;
     private int uniqueNumber;
+
+    public CardController getController() {
+        return controller;
+    }
+
+    public void setController(CardController controller) {
+        this.controller = controller;
+    }
+
+    private CardController controller;
 
     public int getPosition() {
         return position;

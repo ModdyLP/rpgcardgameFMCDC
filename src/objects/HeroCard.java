@@ -24,7 +24,12 @@ public class HeroCard extends MainCard implements Card{
     }
 
     public void setLivePoints(int livePoints) {
-        this.livePoints = livePoints;
+        if (getController() != null) {
+            getController().setLivepoints(livePoints, getCardnummer());
+            this.livePoints = livePoints;
+        } else {
+            System.out.println("Controller is not set: "+getCardname());
+        }
     }
 
     public int getAttackpoints() {
