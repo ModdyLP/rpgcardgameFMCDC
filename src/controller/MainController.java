@@ -12,6 +12,7 @@ import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import loader.GameLoader;
 import loader.GeneralCardLoader;
+import main.Client;
 import storage.MongoDBConnector;
 import utils.GeneralDialog;
 
@@ -52,6 +53,8 @@ public class MainController {
     public void initialize() {
         instance = this;
         setDEFStatus();
+        Client client = new Client();
+        client.createClient();
         GeneralDialog.littleInfoDialog("Willkommen zu unserem kleinen Kartenspiel (Proelignis). \n" +
                 "Programmiert und designet beim Code & Design Camp in Frankfurt a.M. von \n" +
                 "Niklas H. \n" +

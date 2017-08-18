@@ -64,10 +64,10 @@ public class HubController {
         Platform.runLater(() -> {
             grave.setCenter(null);
             grave.setCenter(pane);
-            if (HeroLoader.getInstance().getEnemyherocard().equals(card)) {
+            if (HeroLoader.getInstance().getEnemyherocard() != null && HeroLoader.getInstance().getEnemyherocard().equals(card)) {
                 HeroLoader.getInstance().setEnemyherocard(null, null);
                 removeEnemycard();
-            } else if (HeroLoader.getInstance().getHerocard().equals(card)) {
+            } else if (HeroLoader.getInstance().getHerocard() != null && HeroLoader.getInstance().getHerocard().equals(card)) {
                 HeroLoader.getInstance().setHerocard(null, null);
                 removeHeroCard();
             }
@@ -119,6 +119,7 @@ public class HubController {
                     }
                 } else {
                     MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
+                    RoundLoader.getInstance().setCardcounter(RoundLoader.getInstance().getCardcounter() + 1);
                 }
         });
         if (GameLoader.getInstance().getSpielerid() == 1) {
@@ -147,7 +148,7 @@ public class HubController {
             }
         } else {
             MainController.getInstance().setStatus("Es kann keine Karte gezogen werden");
-            return false;
+            return true;
         }
         return false;
     }
