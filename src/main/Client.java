@@ -26,8 +26,8 @@ public class Client {
                     DataInputStream dIn = new DataInputStream(in);
                     DataOutputStream dOut = new DataOutputStream(out);
                     while (true) {
-                        if (socket.isConnected()) {
-                            System.out.println("Communitcating: "+GameLoader.getInstance().isIstamzug());
+                        if (socket.isConnected() && !socket.isClosed()) {
+                            System.out.println("Communitcating: "+GameLoader.getInstance().isIstamzug() +"  "+socket.isClosed()+"  "+socket.isConnected());
                             if (GameLoader.getInstance().isIstamzug()) {
                                 System.out.println("Wrinting Something on the server");
                                 dOut.writeUTF("\nRequest: "+GameLoader.getInstance().getSpielerid());
