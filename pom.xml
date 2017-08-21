@@ -14,11 +14,6 @@
             <artifactId>mongo-java-driver</artifactId>
             <version>3.5.0</version>
         </dependency>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.43</version>
-        </dependency>
     </dependencies>
 
     <!-- Build Settings -->
