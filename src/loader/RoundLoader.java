@@ -1,10 +1,8 @@
 package loader;
 
-import objects.HeroCard;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import storage.MongoDBConnector;
-import storage.MySQLConnector;
 
 /**
  * Created by ModdyLP on 12.08.2017. Website: https://moddylp.de/

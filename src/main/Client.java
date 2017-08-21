@@ -2,10 +2,12 @@ package main;
 
 import controller.MainController;
 import loader.GameLoader;
-import loader.RoundLoader;
 import utils.GeneralDialog;
 
-import java.io.*;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.InetAddress;
 import java.net.Socket;
 
@@ -42,7 +44,7 @@ public class Client {
                     }
                 } catch (Exception e) {
                     System.err.println("Server is not online: "+e.getMessage());
-                    GeneralDialog.littleInfoDialog("Server not online", "Server not online");
+                    MainController.getInstance().setOffline(true);
                     MainController.getInstance().exit();
                 }
             }

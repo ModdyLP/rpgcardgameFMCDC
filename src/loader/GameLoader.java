@@ -6,16 +6,11 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import objects.Card;
-import objects.HeroCard;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import storage.MongoDBConnector;
-import storage.MySQLConnector;
-import utils.GeneralDialog;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 /**
@@ -170,7 +165,7 @@ public class GameLoader {
                 MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
                         new Document("$unset", new Document("player2herocard", "").append("player2herocardleben", "")));
             } else {
-                System.out.println("No Player ID");
+                System.out.println("Exit without tracked User ID");
             }
         } catch (Exception ex) {
             ex.printStackTrace();

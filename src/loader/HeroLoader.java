@@ -11,11 +11,8 @@ import objects.HeroCard;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import storage.MongoDBConnector;
-import storage.MySQLConnector;
-import utils.GeneralDialog;
 import utils.Utils;
 
-import java.sql.ResultSet;
 import java.util.ArrayList;
 
 

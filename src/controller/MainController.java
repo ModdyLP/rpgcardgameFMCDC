@@ -36,10 +36,19 @@ public class MainController {
 
     @FXML
     public BorderPane mainLayout;
+    private boolean offline = false;
 
     public void setPrimarystage(Stage primarystage) {
         this.primarystage = primarystage;
         this.primarystage.getIcons().add(new Image(MainController.class.getResourceAsStream("/logo.png")));
+    }
+
+    public boolean isOffline() {
+        return offline;
+    }
+
+    public void setOffline(boolean offline) {
+        this.offline = offline;
     }
 
     private Stage primarystage;
@@ -77,6 +86,9 @@ public class MainController {
     public void exit() {
         //GeneralDialog.littleInfoDialog("Danke für das Ausprobieren unseres Spiels.", "Danke");
         Platform.runLater(() -> {
+            if (offline) {
+                GeneralDialog.littleInfoDialog("Server not online", "Server not online");
+            }
             GameLoader.getInstance().setStart(false);
             GameLoader.getInstance().logout();
             GeneralDialog.logout();

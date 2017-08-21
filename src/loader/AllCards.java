@@ -11,10 +11,11 @@ import objects.HeroCard;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import storage.MongoDBConnector;
-import storage.MySQLConnector;
 
-import java.sql.ResultSet;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Random;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/

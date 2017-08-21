@@ -1,20 +1,13 @@
 package controller;
 
 import javafx.application.Platform;
-import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import loader.AllCards;
-import loader.HeroLoader;
-import objects.Card;
 import objects.HeroCard;
-import storage.MySQLConnector;
-
-import java.sql.ResultSet;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
