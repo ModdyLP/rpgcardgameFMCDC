@@ -9,6 +9,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import loader.*;
+import main.Client;
 import objects.Card;
 
 import java.util.ArrayList;

@@ -7,12 +7,14 @@ import javafx.scene.control.Label;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.image.Image;
+import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.BorderPane;
 import javafx.scene.layout.GridPane;
 import javafx.stage.Stage;
 import loader.GameLoader;
 import loader.GeneralCardLoader;
 import main.Client;
+import objects.Lobby;
 import storage.MongoDBConnector;
 import utils.GeneralDialog;
 
@@ -52,7 +54,7 @@ public class MainController {
     }
 
     private Stage primarystage;
-    private GridPane pane;
+    public GridPane pane;
 
 
     public static MainController getInstance() {
@@ -62,8 +64,6 @@ public class MainController {
     public void initialize() {
         instance = this;
         setDEFStatus();
-        Client client = new Client();
-        client.createClient();
         GeneralDialog.littleInfoDialog("Willkommen zu unserem kleinen Kartenspiel (Proelignis). \n" +
                 "Programmiert und designet beim Code & Design Camp in Frankfurt a.M. von \n" +
                 "Niklas H. \n" +
@@ -71,6 +71,7 @@ public class MainController {
                 "Alexander D. \n" +
                 "Jessie L. \n" +
                 "Joshua H.", "Willkommen");
+        reset();
     }
 
     //Utils for Layout
@@ -86,28 +87,36 @@ public class MainController {
     public void exit() {
         //GeneralDialog.littleInfoDialog("Danke für das Ausprobieren unseres Spiels.", "Danke");
         Platform.runLater(() -> {
-            if (offline) {
-                GeneralDialog.littleInfoDialog("Server not online", "Server not online");
-            }
             GameLoader.getInstance().setStart(false);
             GameLoader.getInstance().logout();
-            GeneralDialog.logout();
             MongoDBConnector.getInstance().close();
             System.exit(0);
         });
     }
-    public void restart() {
-        if (!gameisrunning) {
-            GameLoader.getInstance().setStart(false);
-            setStatus("Lade Hub...");
-            GeneralCardLoader.clearall();
-            if (pane != null) {
+    public void reset() {
+        setDEFStatus();
+        Platform.runLater(() -> {
+            try {
                 mainLayout.setCenter(null);
-                HubController.destroy();
+                FXMLLoader lobbyloader = new FXMLLoader(getClass().getResource("/lobby.fxml"));
+                AnchorPane pane = lobbyloader.load();
+                LobbyController controller = lobbyloader.getController();
+                mainLayout.setCenter(pane);
+                setDEFStatus();
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            MainController.getInstance().setStatus("Starte...");
+        });
+    }
+
+
+    public void start() {
+        System.out.println("Start init");
+        if (LobbyController.getInstance().selectedlobby != null) {
+            setStatus("Lade Kartendeck...");
             Platform.runLater(() -> {
                 try {
+                    mainLayout.setCenter(null);
                     FXMLLoader hubloader = new FXMLLoader(getClass().getResource("/hub.fxml"));
                     pane = hubloader.load();
                     pane.setMinWidth(mainLayout.getWidth() - 80);
@@ -121,7 +130,7 @@ public class MainController {
             });
             GameLoader.getInstance().setStart(true);
             GameLoader.getInstance().gameloop();
-            gameisrunning = true;
+            LobbyController.getInstance().selectedlobby = null;
         }
     }
 

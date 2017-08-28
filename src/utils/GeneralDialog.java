@@ -16,10 +16,12 @@ public class GeneralDialog {
     }
 
     public static void logout() {
-        Alert dialog = new Alert(Alert.AlertType.INFORMATION);
-        dialog.setHeaderText("Du wurdest ausgeloggt");
-        dialog.setTitle("Logout");
-        dialog.setContentText("Du wurdest ausgeloggt, entweder durch deinen Mitspieler oder du selbst hast das Spiel verlassen");
-        dialog.showAndWait();
+        Platform.runLater(() -> {
+            Alert dialog = new Alert(Alert.AlertType.INFORMATION);
+            dialog.setHeaderText("Du wurdest ausgeloggt");
+            dialog.setTitle("Logout");
+            dialog.setContentText("Du wurdest ausgeloggt, entweder durch deinen Mitspieler oder du selbst hast das Spiel verlassen");
+            dialog.showAndWait();
+        });
     }
 }

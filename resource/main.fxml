@@ -16,7 +16,7 @@
         <menus>
           <Menu fx:id="spielMenu" mnemonicParsing="false" text="Spiel">
             <items>
-              <MenuItem fx:id="neustart" mnemonicParsing="false" onAction="#restart" text="Neustart" />
+              <MenuItem fx:id="neustart" mnemonicParsing="false" onAction="#reset" text="Start" />
                   <MenuItem fx:id="verlassen" mnemonicParsing="false" onAction="#exit" text="Verlassen" />
             </items>
           </Menu>
