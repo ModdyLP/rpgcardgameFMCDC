@@ -71,11 +71,11 @@ public class HandCardLoader {
                 if (HeroLoader.getInstance().getHerocard() == null) {
                     System.out.println("Karte gelegt: " + handcards.get(cardid[0]).getCardname());
                     HeroCard heroCard = (HeroCard) card;
-                    if (GameLoader.getInstance().getSpielerid() == 1) {
-                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                    if (GameLoader.getInstance().player1) {
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                                 new Document("$set", new Document("player1herocard", card.getCardnummer()).append("player1herocardleben", heroCard.getLivePoints())));
-                    } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                    } else {
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                                 new Document("$set", new Document("player2herocard", card.getCardnummer()).append("player2herocardleben", heroCard.getLivePoints())));
                     }
                     removeHandcard(cardid[0]);

@@ -44,6 +44,9 @@ public class HubController {
     private BorderPane draw2;
 
     @FXML
+    private Label drawnumber;
+
+    @FXML
     private BorderPane grave;
 
     public Label getSpieler() {
@@ -99,13 +102,17 @@ public class HubController {
 
     public void initialize() {
         instance = this;
-        AllCards.getInstance().loadCards();
-        cardboxplaces.put(0, true);
-        cardboxplaces.put(1, true);
-        cardboxplaces.put(2, true);
-        cardboxplaces.put(3, true);
-        draw1.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
-            if (GameLoader.getInstance().isIstamzug() && (RoundLoader.getInstance().getCardcounter() < 1)) {
+        System.out.println((GameLoader.getInstance().selectedlobby != null)+ "  "+GameLoader.getInstance().selectedlobby.getName());
+        if (GameLoader.getInstance().selectedlobby != null) {
+            GameLoader.getInstance().setSpielerid();
+            GameLoader.getInstance().updateLobby();
+            AllCards.getInstance().loadCards();
+            cardboxplaces.put(0, true);
+            cardboxplaces.put(1, true);
+            cardboxplaces.put(2, true);
+            cardboxplaces.put(3, true);
+            draw1.addEventFilter(MouseEvent.MOUSE_PRESSED, event -> {
+                if (GameLoader.getInstance().isIstamzug() && (RoundLoader.getInstance().getCardcounter() < 1)) {
                     HashMap<Integer, Card> cards = new HashMap<>();
                     cards.putAll(AllCards.getInstance().getSpielCards());
                     boolean found = false;
@@ -116,22 +123,26 @@ public class HubController {
                             found = true;
                             RoundLoader.getInstance().setCardcounter(RoundLoader.getInstance().getCardcounter() + 1);
                             AllCards.getInstance().getSpielCards().remove(card.getUniqueNumber());
+                            setDrawnumber(AllCards.getInstance().getSpielCards().size());
                         }
                     }
                 } else {
                     MainController.getInstance().setStatus("Keine Karten mehr auf dem Stapel");
                     RoundLoader.getInstance().setCardcounter(RoundLoader.getInstance().getCardcounter() + 1);
                 }
-        });
-        if (GameLoader.getInstance().getSpielerid() == 1) {
-            setSpieler("Spieler 1");
-        } else if (GameLoader.getInstance().getSpielerid() == 2) {
-            setSpieler("Spieler 2");
+            });
+            setSpieler(GameLoader.getInstance().spielername);
+            setDrawnumber(AllCards.getInstance().getSpielCards().size());
+        } else {
+            MainController.getInstance().reset();
         }
     }
 
     public static HubController getInstance() {
         return instance;
+    }
+    public void setDrawnumber(int number) {
+        drawnumber.setText(String.valueOf(number));
     }
 
     public boolean addCardToHbox(GridPane pane, Card card) {

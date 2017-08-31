@@ -47,11 +47,11 @@ public class HeroLoader {
             if (enemyherocardINST != null) {
                 System.out.println("Karte greift an: "+herocard.getCardname());
                 ((HeroCard) enemyherocard).setLivePoints(((HeroCard) enemyherocard).getLivePoints() - Utils.runden(((HeroCard) herocard).getAttackpoints(), ((HeroCard) enemyherocard).getDefendpoints()));
-                if (GameLoader.getInstance().getSpielerid() == 1) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                if (GameLoader.getInstance().player1) {
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                             new Document("$set", new Document("player2herocardleben", ((HeroCard) enemyherocard).getLivePoints())));
-                } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+                } else {
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                             new Document("$set", new Document("player1herocardleben", ((HeroCard) enemyherocard).getLivePoints())));
                 }
             } else {
@@ -92,14 +92,14 @@ public class HeroLoader {
         try {
             ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
             for (Document doc : documents) {
-                if (GameLoader.getInstance().getSpielerid() == 1) {
+                if (GameLoader.getInstance().player1) {
                     if (doc.getInteger("player2herocard") != null && doc.getInteger("player2herocard") != 0) {
                         HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(doc.getInteger("player2herocard"));
                         card.setLivePoints(doc.getInteger("player2herocardleben"));
                         GridPane pane = GeneralCardLoader.loadHandCard(card, HubController.getInstance().getCardbox());
                         setEnemyherocard(card, pane);
                     }
-                } else if (GameLoader.getInstance().getSpielerid() == 2) {
+                } else  {
                     if (doc.getInteger("player1herocard") != null && doc.getInteger("player1herocard") != 0) {
                         HeroCard card = (HeroCard) AllCards.getInstance().getCardbyID(doc.getInteger("player1herocard"));
                         card.setLivePoints(doc.getInteger("player1herocardleben"));
@@ -117,14 +117,14 @@ public class HeroLoader {
             try {
                 ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
                 for (Document doc : documents) {
-                    if (GameLoader.getInstance().getSpielerid() == 1) {
+                    if (GameLoader.getInstance().player1) {
                         if (doc.getInteger("player1herocard") == herocard.getCardnummer()) {
                             ((HeroCard) herocard).setLivePoints(doc.getInteger("player1herocardleben"));
                             System.out.println("Karte sync " + ((HeroCard) herocard).getController().getLivepoints() + "  " + ((HeroCard) herocard).getCardnummer());
                         } else {
                             System.out.println("Karte passt nicht zur Nummer: " + herocard.getCardnummer() + " " + doc.getInteger("player1herocard"));
                         }
-                    } else  if (GameLoader.getInstance().getSpielerid() == 2) {
+                    } else  {
                         if (doc.getInteger("player2herocard") == herocard.getCardnummer()) {
                             ((HeroCard) herocard).setLivePoints(doc.getInteger("player2herocardleben"));
                             System.out.println("Karte sync " + ((HeroCard) herocard).getController().getLivepoints() + "  " + ((HeroCard) herocard).getCardnummer());

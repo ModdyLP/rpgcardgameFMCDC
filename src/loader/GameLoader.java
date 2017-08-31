@@ -7,8 +7,10 @@ import javafx.application.Platform;
 import javafx.concurrent.Task;
 import javafx.scene.layout.GridPane;
 import objects.Card;
+import objects.Lobby;
 import org.bson.Document;
 import org.bson.types.ObjectId;
+import org.json.JSONObject;
 import storage.MongoDBConnector;
 import utils.GeneralDialog;
 
@@ -21,11 +23,18 @@ import java.util.HashMap;
 public class GameLoader {
     private boolean istamzug = false;
 
-    public int getSpielerid() {
+    public String getSpielerid() {
         return spielerid;
     }
 
-    private int spielerid = 0;
+    public String spielerid = "";
+    public String spielername = "";
+    public boolean player1 = false;
+    public Lobby selectedlobby = null;
+    public boolean loaded = false;
+    public boolean login = false;
+
+    public boolean authorized = false;
 
     public void setStart(boolean start) {
         this.start = start;
@@ -43,57 +52,37 @@ public class GameLoader {
 
 
     public void gameloop() {
-        Task<Void> gametask = new Task<Void>() {
-            @Override
-            protected Void call() throws Exception {
-                try {
-                    setSpielerid();
-                    if (spielerid == 1) {
-                        AllCards.getInstance().splitupCards();
-                    }
-                    while (start) {
-                        Thread.sleep(1000);
-                        checkPlayer();
-                        RoundLoader.getInstance().checkRoundOver();
-                    }
-                    System.out.println("Task stopped");
-                } catch (Exception ex) {
-                    ex.printStackTrace();
-                }
-                return null;
-            }
-        };
-        Thread gamethread = new Thread(gametask);
-        gamethread.start();
     }
 
-    public HashMap<String, String> sendData() {
-        HashMap<String, String> map = new HashMap<>();
-        map.put("playerid", String.valueOf(GameLoader.getInstance().getSpielerid()));
-        map.put("kartegelegt", String.valueOf(RoundLoader.getInstance().getCardcounter()));
-        map.put("karteattack", String.valueOf(RoundLoader.getInstance().getAttackcounter()));
-        map.put("playerisdran", String.valueOf(GameLoader.getInstance().isIstamzug()));
-        return map;
+    public void sendData(JSONObject jsonObject) {
+        if (player1 && GameLoader.getInstance().selectedlobby != null) {
+            jsonObject.put("client1", getSpielerid());
+        } else {
+            jsonObject.put("client2", getSpielerid());
+        }
+        jsonObject.put("lobbyid", selectedlobby.getUuid());
+        jsonObject.put("kartegelegt",RoundLoader.getInstance().getCardcounter());
+        jsonObject.put("karteattack", RoundLoader.getInstance().getAttackcounter());
+        jsonObject.put("playerisdran", isIstamzug());
     }
 
-    private void checkPlayer() {
+    public void checkPlayer() {
         try {
             ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
             for (Document doc : documents) {
-                if (doc.getInteger("current") != 0) {
+                if (!doc.getString("current").equals("")) {
                     HubController.getInstance().setSpielerdran("Spieler " + doc.getInteger("current") + " ist dran.");
                 }
-                if (doc.getInteger("player1") == 500 && spielerid == 2) {
-                    logout();
-                } else if (doc.getInteger("player2") == 500 && spielerid == 1) {
+                if (doc.getInteger("player1") == 500 || doc.getInteger("player2") == 500) {
+                    System.out.println("Player left the Lobby");
                     logout();
                 }
-                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200 && doc.getInteger("current") == 0) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$set", new Document("current", 1)));
+                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200 && !doc.containsKey("current")) {
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                            new Document("$set", new Document("current", spielerid)));
                 }
-                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200 && doc.getInteger("current") != 0) {
-                    if (doc.getInteger("current") == spielerid && !istamzug) {
+                if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200 && doc.containsKey("current")) {
+                    if (!doc.getString("current").equals("") && doc.getString("current").equals(spielerid) && !istamzug) {
                         istamzug = true;
                         HeroLoader.getInstance().loadEnemyCard();
                         HeroLoader.getInstance().loadHero();
@@ -140,20 +129,15 @@ public class GameLoader {
 
     public void setSpielerid() {
         try {
-            ArrayList<Document> documents = MongoDBConnector.getInstance().getCollectionAsList("Game");
+            ArrayList<Document> documents = MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").find(new Document("_id", new ObjectId(selectedlobby.getUuid()))).into(new ArrayList<>());
             for (Document doc : documents) {
                 System.out.println("Spieler 1: " + doc.getInteger("player1") + " | Spieler2: " + doc.getInteger("player2"));
                 if (doc.getInteger("player1") != 200) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$set", new Document("player1", 200).append("player2", 0)));
-                    spielerid = 1;
-                    HubController.getInstance().setSpieler("Du: Spieler 1");
-                } else if (doc.getInteger("player2") != 200) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$set", new Document("player2", 200)));
-                    spielerid = 2;
-                    HubController.getInstance().setSpieler("Du: Spieler 2");
-                } else {
+                    player1 = true;
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                            new Document("$set", new Document("owner", spielerid)));
+                    AllCards.getInstance().splitupCards();
+                } else if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200) {
                     logout();
                     System.out.println("Lobby ist voll");
                 }
@@ -162,34 +146,43 @@ public class GameLoader {
             ex.printStackTrace();
         }
     }
+    public void updateLobby() {
+        if (player1) {
+            MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                    new Document("$set", new Document("player1", 200).append("player2", 0).append("player1name", spielerid)));
+        } else {
+            MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                    new Document("$set", new Document("player2", 200).append("player2name", spielerid)));
+        }
+    }
 
     public void logout() {
         try {
             if (start) {
                 MainController.getInstance().setStatus("Logout");
-                if (spielerid == 1) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$set", new Document("player1", 500).append("current", 0).append("splitted", 0)));
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$unset", new Document("player1herocard", "").append("player1herocardleben", "")));
-                } else if (spielerid == 2) {
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$set", new Document("player2", 500).append("current", 0).append("splitted", 0)));
-                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
-                            new Document("$unset", new Document("player2herocard", "").append("player2herocardleben", "")));
-                } else {
-                    System.out.println("Exit without tracked User ID");
+                if (selectedlobby != null) {
+                    if (player1) {
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                                new Document("$set", new Document("player1", 500).append("current", "").append("splitted", 0)));
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                                new Document("$unset", new Document("player1herocard", "").append("player1name", 0).append("player1herocardleben", "")));
+                    } else {
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                                new Document("$set", new Document("player2", 500).append("current", "").append("splitted", 0)));
+                        MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
+                                new Document("$unset", new Document("player2herocard", "").append("player2name", 0).append("player2herocardleben", "")));
+                    }
                 }
                 GeneralDialog.logout();
                 Platform.runLater(() -> {
                     if (MainController.getInstance().pane != null) {
+                        Platform.runLater(() -> LobbyController.getInstance().lobbylist.getItems().clear());
                         MainController.getInstance().reset();
                         HubController.destroy();
                     }
-                    GameLoader.getInstance().setStart(false);
+                    setStart(false);
                 });
             }
-            Platform.runLater(() -> LobbyController.getInstance().lobbylist.getItems().clear());
         } catch (Exception ex) {
             ex.printStackTrace();
         }

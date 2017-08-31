@@ -30,20 +30,21 @@ public class RoundLoader {
         this.attackcounter = attackcounter;
     }
 
-    public void checkRoundOver() {
-        System.out.println("Gezogen: "+getCardcounter()+"   Attackiert: "+getAttackcounter());
+    public boolean checkRoundOver() {
         if (getCardcounter() == 1 && getAttackcounter() == 1) {
             GameLoader.getInstance().setIstamzug(false);
-            if (GameLoader.getInstance().getSpielerid() == 1) {
-                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+            if (GameLoader.getInstance().player1) {
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                         new Document("$set", new Document("current", 2)));
-            } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+            } else {
+                MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                         new Document("$set", new Document("current", 1)));
             }
             cardcounter = 0;
             attackcounter = 0;
+            return true;
         }
+        return false;
     }
 
     public static RoundLoader getInstance() {

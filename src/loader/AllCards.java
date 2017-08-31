@@ -92,14 +92,14 @@ public class AllCards {
                 System.out.println("Verteile Karte(" + id + "): " + card.getCardnummer());
                 if (id == 1) {
                     player1.add(new InsertOneModel<>(new Document("playername", "player1")
-                            .append("playerid", new ObjectId("599550c53d6c11d66470145c"))
-                            .append("lobby", new ObjectId("599550c53d6c00d66470145c"))
+                            .append("playerid", new ObjectId(GameLoader.getInstance().getSpielerid()))
+                            .append("lobby", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid()))
                             .append("cardid", card.getCardnummer())));
                     id = 2;
-                } else if (id == 2) {
+                } else  {
                     player2.add(new InsertOneModel<>(new Document("playername", "player2")
-                            .append("playerid", new ObjectId("599550c53d6c22d66470145c"))
-                            .append("lobby", new ObjectId("599550c53d6c00d66470145c"))
+                            .append("playerid", new ObjectId(GameLoader.getInstance().getSpielerid()))
+                            .append("lobby", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid()))
                             .append("cardid", card.getCardnummer())));
                     id = 1;
                 }
@@ -112,7 +112,7 @@ public class AllCards {
             } else {
                 MainController.getInstance().setStatus("Karten wurden nicht verteilt");
             }
-            MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId("599550c53d6c00d66470145c")),
+            MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
                     new Document("$set", new Document("splitted", 1)));
 
         } catch (Exception ex) {
@@ -123,10 +123,10 @@ public class AllCards {
     public void loadStapelfromplayer() {
         try {
             ArrayList<Document> documents = new ArrayList<>();
-            if (GameLoader.getInstance().getSpielerid() == 1) {
-                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", "player1")).into(new ArrayList<>()));
-            } else if (GameLoader.getInstance().getSpielerid() == 2) {
-                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", "player2")).into(new ArrayList<>()));
+            if (GameLoader.getInstance().player1) {
+                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", GameLoader.getInstance().getSpielerid())).into(new ArrayList<>()));
+            } else {
+                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", GameLoader.getInstance().getSpielerid())).into(new ArrayList<>()));
             }
             for (Document doc : documents) {
                 Card card = getCardbyID(doc.getInteger("cardid"));

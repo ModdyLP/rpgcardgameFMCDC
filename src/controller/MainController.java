@@ -41,8 +41,7 @@ public class MainController {
     private boolean offline = false;
 
     public void setPrimarystage(Stage primarystage) {
-        this.primarystage = primarystage;
-        this.primarystage.getIcons().add(new Image(MainController.class.getResourceAsStream("/logo.png")));
+        primarystage.getIcons().add(new Image(MainController.class.getResourceAsStream("/logo.png")));
     }
 
     public boolean isOffline() {
@@ -53,7 +52,6 @@ public class MainController {
         this.offline = offline;
     }
 
-    private Stage primarystage;
     public GridPane pane;
 
 
@@ -86,6 +84,7 @@ public class MainController {
     //Listener
     public void exit() {
         //GeneralDialog.littleInfoDialog("Danke für das Ausprobieren unseres Spiels.", "Danke");
+        GameLoader.getInstance().logout();
         Platform.runLater(() -> {
             GameLoader.getInstance().setStart(false);
             GameLoader.getInstance().logout();
@@ -94,6 +93,9 @@ public class MainController {
         });
     }
     public void reset() {
+        GameLoader.getInstance().selectedlobby = null;
+        GameLoader.getInstance().loaded = false;
+        GameLoader.getInstance().setStart(false);
         setDEFStatus();
         Platform.runLater(() -> {
             try {
@@ -112,7 +114,7 @@ public class MainController {
 
     public void start() {
         System.out.println("Start init");
-        if (LobbyController.getInstance().selectedlobby != null) {
+        if (GameLoader.getInstance().selectedlobby != null) {
             setStatus("Lade Kartendeck...");
             Platform.runLater(() -> {
                 try {
@@ -130,7 +132,6 @@ public class MainController {
             });
             GameLoader.getInstance().setStart(true);
             GameLoader.getInstance().gameloop();
-            LobbyController.getInstance().selectedlobby = null;
         }
     }
 

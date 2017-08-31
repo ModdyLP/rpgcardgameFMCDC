@@ -6,25 +6,24 @@ import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
+import loader.GameLoader;
 import main.Client;
 import objects.Lobby;
+import org.bson.Document;
+import org.bson.types.ObjectId;
 import storage.FileDriver;
+import storage.MongoDBConnector;
 import utils.LoginDialog;
 
+import java.lang.annotation.Documented;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class LobbyController implements Initializable {
     @FXML
     public ListView<Lobby> lobbylist;
-
-    public boolean loaded = false;
-    public boolean login = false;
-
-    public boolean authorized = false;
-
-    public Lobby selectedlobby = null;
 
     @FXML
     public Label serverstatus;
@@ -34,7 +33,6 @@ public class LobbyController implements Initializable {
 
 
     private static LobbyController instance;
-    private Client client;
 
     public static LobbyController getInstance() {
         return instance;
@@ -46,8 +44,8 @@ public class LobbyController implements Initializable {
         } else {
             Platform.runLater(() -> neueLobby.setDisable(true));
             Platform.runLater(() -> lobbylist.getItems().clear());
-            login = false;
-            loaded = false;
+            GameLoader.getInstance().login = false;
+            GameLoader.getInstance().loaded = false;
         }
     }
 
@@ -66,25 +64,28 @@ public class LobbyController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         instance = this;
         setOffline(true);
-        client = new Client();
-        client.createClient();
+        Client.getInstance().createClient();
     }
     public void load() {
-        if(!login) {
+        if(!GameLoader.getInstance().login) {
             if (FileDriver.getInstance().getPropertyOnly("username") != null) {
                 LoginDialog.createLoginDialog();
-                login = true;
+                GameLoader.getInstance().login = true;
             } else {
                 LoginDialog.createRegisterDialog();
-                login = true;
+                GameLoader.getInstance().login = true;
             }
         }
-        if (!loaded && authorized) {
+        if (!GameLoader.getInstance().loaded && GameLoader.getInstance().authorized) {
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
                     Platform.runLater(() -> {
-                        ObservableList<Lobby> items = FXCollections.observableArrayList(new Lobby("Lobby1", "test", ""));
+                        ObservableList<Lobby> items = FXCollections.observableArrayList();
+                        ArrayList<Document> list = MongoDBConnector.getInstance().getCollectionAsList("Game");
+                        for (Document document: list) {
+                            items.add(new Lobby(document.getString("lobbyname"), document.get("_id").toString() ,document.getString("password")));
+                        }
                         lobbylist.setItems(items);
                         lobbylist.setEditable(false);
                         lobbylist.setCellFactory(param -> new ListCell<Lobby>() {
@@ -107,8 +108,8 @@ public class LobbyController implements Initializable {
                                 Optional<ButtonType> result = alert.showAndWait();
                                 if (result.isPresent()) {
                                     if (result.get().equals(ButtonType.OK) && lobbylist.getSelectionModel().getSelectedItem() != null) {
-                                        System.out.println(lobbylist.getSelectionModel().getSelectedItem().getName());
-                                        selectedlobby = lobbylist.getSelectionModel().getSelectedItem();
+                                        GameLoader.getInstance().selectedlobby = lobbylist.getSelectionModel().getSelectedItem();
+                                        System.out.println("Lobby: "+GameLoader.getInstance().selectedlobby.getName());
                                         MainController.getInstance().start();
                                     }
                                 }
@@ -120,7 +121,7 @@ public class LobbyController implements Initializable {
                 }
             });
             thread.start();
-            loaded = true;
+            GameLoader.getInstance().loaded = true;
         }
     }
 }

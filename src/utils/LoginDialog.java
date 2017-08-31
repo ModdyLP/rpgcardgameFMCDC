@@ -9,6 +9,7 @@ import javafx.scene.control.*;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.GridPane;
 import javafx.util.Pair;
+import loader.GameLoader;
 import org.bson.Document;
 import org.bson.types.ObjectId;
 import storage.FileDriver;
@@ -147,7 +148,7 @@ public class LoginDialog {
                     } else if (dialogButton == Register) {
                         registerdialog.close();
                         createLoginDialog();
-                    } else if (dialogButton != Register && dialogButton != loginButtonType) {
+                    } else {
                         LobbyController.getInstance().disableLobby(true);
                     }
                     return null;
@@ -167,7 +168,7 @@ public class LoginDialog {
         }
     }
 
-    public static void loginauswerten() {
+    private static void loginauswerten() {
         loginresult.ifPresent(usernamePassword -> {
             try {
                 Document document = new Document("name", usernamePassword.getKey());
@@ -179,7 +180,9 @@ public class LoginDialog {
                         FileDriver.getInstance().setProperty("userid", proof.get("_id").toString());
                         FileDriver.getInstance().saveJson();
                         GeneralDialog.littleInfoDialog("Login war erfolgreich", "Erfolg");
-                        LobbyController.getInstance().authorized = true;
+                        GameLoader.getInstance().spielername = proof.getString("name");
+                        GameLoader.getInstance().spielerid = proof.get("_id").toString();
+                        GameLoader.getInstance().authorized = true;
                         LobbyController.getInstance().disableLobby(false);
                     } else {
                         GeneralDialog.littleInfoDialog("Login fehlgeschlagen", "Fehlschlag");
@@ -209,7 +212,7 @@ public class LoginDialog {
                         .append("logintimes", 0)
                         .append("playedgames", 0);
                 MongoDBConnector.getInstance().getMongoDatabase().getCollection("Players").insertOne(document);
-                LobbyController.getInstance().authorized = true;
+                GameLoader.getInstance().authorized = true;
             } catch (Exception ex) {
                 ex.printStackTrace();
                 LobbyController.getInstance().disableLobby(true);
