@@ -67,7 +67,11 @@ public class Client {
                             break;
                         } else if (readmap.has("status")){
                             if (readmap.has("client1") && readmap.has("client2")) {
-
+                                if (GameLoader.getInstance().player1) {
+                                    GameLoader.getInstance().enemyspielerid = readmap.getString("client2");
+                                } else {
+                                    GameLoader.getInstance().enemyspielerid = readmap.getString("client1");
+                                }
                             } else if (readmap.has("update") && !readmap.getString("update").equals(GameLoader.getInstance().spielerid)) {
                                 GameLoader.getInstance().checkPlayer();
                             }

@@ -29,6 +29,8 @@ public class GameLoader {
 
     public String spielerid = "";
     public String spielername = "";
+    public String enemyspielerid = "";
+    public String enemyspielername = "";
     public boolean player1 = false;
     public Lobby selectedlobby = null;
     public boolean loaded = false;
@@ -90,6 +92,9 @@ public class GameLoader {
                     HeroLoader.getInstance().checkIfCarddie();
                 }
                 if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200) {
+                    if (doc.getInteger("splitted") == 0) {
+                        AllCards.getInstance().splitupCards();
+                    }
                     if (HandCardLoader.getInstance().getAllHandcards().size() == 0 && doc.getInteger("splitted") == 1) {
                         System.out.println("Lade Handkarten");
                         Platform.runLater(() -> {
@@ -136,7 +141,6 @@ public class GameLoader {
                     player1 = true;
                     MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
                             new Document("$set", new Document("owner", spielerid)));
-                    AllCards.getInstance().splitupCards();
                 } else if (doc.getInteger("player1") == 200 && doc.getInteger("player2") == 200) {
                     logout();
                     System.out.println("Lobby ist voll");
