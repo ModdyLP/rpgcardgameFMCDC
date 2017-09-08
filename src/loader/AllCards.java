@@ -12,10 +12,7 @@ import org.bson.Document;
 import org.bson.types.ObjectId;
 import storage.MongoDBConnector;
 
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
-import java.util.Random;
+import java.util.*;
 
 /**
  * Created by ModdyLP on 11.08.2017. Website: https://moddylp.de/
@@ -79,45 +76,53 @@ public class AllCards {
 
     public void splitupCards() {
         try {
-            MainController.getInstance().setStatus("Verteile Karten");
-            HashMap<Integer, Card> splitupcards = new HashMap<>();
-            int id = 1;
-            int zahler = 0;
-            MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").drop();
-            ArrayList<WriteModel<Document>> player1 = new ArrayList<>();
-            ArrayList<WriteModel<Document>> player2 = new ArrayList<>();
-            splitupcards.putAll(cards);
-            while (splitupcards.size() > 0) {
-                Card card = getRandomCard(new ArrayList<>(splitupcards.values()));
-                System.out.println("Verteile Karte(" + id + "): " + card.getCardnummer());
-                if (id == 1) {
-                    player1.add(new InsertOneModel<>(new Document("playername", "player1")
-                            .append("playerid", new ObjectId(GameLoader.getInstance().getSpielerid()))
-                            .append("lobby", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid()))
-                            .append("cardid", card.getCardnummer())));
-                    id = 2;
-                } else  {
-                    player2.add(new InsertOneModel<>(new Document("playername", "player2")
-                            .append("playerid", new ObjectId(GameLoader.getInstance().getSpielerid()))
-                            .append("lobby", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid()))
-                            .append("cardid", card.getCardnummer())));
-                    id = 1;
+            if (!GameLoader.getInstance().enemyspielerid.equals("") && !GameLoader.getInstance().spielerid.equals("")) {
+                Document document = MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").find(new Document("_id", GameLoader.getInstance().selectedlobby.getUuid())).first();
+                if (document.getInteger("splitted") == 0) {
+                    MainController.getInstance().setStatus("Verteile Karten");
+                    HashMap<Integer, Card> splitupcards = new HashMap<>();
+                    int id = 1;
+                    int zahler = 0;
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").deleteMany(new Document("playername", GameLoader.getInstance().spielerid));
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").deleteMany(new Document("playername", GameLoader.getInstance().enemyspielerid));
+                    ArrayList<WriteModel<Document>> player1 = new ArrayList<>();
+                    ArrayList<WriteModel<Document>> player2 = new ArrayList<>();
+                    splitupcards.putAll(cards);
+                    while (splitupcards.size() > 0) {
+                        Card card = getRandomCard(new ArrayList<>(splitupcards.values()));
+                        System.out.println("Verteile Karte(" + id + "): " + card.getCardnummer());
+                        if (id == 1) {
+                            player1.add(new InsertOneModel<>(new Document("playername", GameLoader.getInstance().spielerid)
+                                    .append("playerid", new ObjectId(GameLoader.getInstance().getSpielerid()))
+                                    .append("lobby", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid()))
+                                    .append("cardid", card.getCardnummer())));
+                            id = 2;
+                        } else {
+                            player2.add(new InsertOneModel<>(new Document("playername", GameLoader.getInstance().enemyspielerid)
+                                    .append("playerid", new ObjectId(GameLoader.getInstance().enemyspielerid))
+                                    .append("lobby", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid()))
+                                    .append("cardid", card.getCardnummer())));
+                            id = 1;
+                        }
+                        splitupcards.remove(card.getUniqueNumber());
+                    }
+                    BulkWriteResult bulkWriteResult = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").bulkWrite(player1);
+                    BulkWriteResult bulkWriteResult2 = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").bulkWrite(player2);
+                    if (bulkWriteResult != null && bulkWriteResult2 != null) {
+                        MainController.getInstance().setStatus("Karten wurden verteilt");
+                    } else {
+                        MainController.getInstance().setStatus("Karten wurden nicht verteilt");
+                    }
+                    MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
+                            new Document("$set", new Document("splitted", 1)));
                 }
-                splitupcards.remove(card.getUniqueNumber());
-            }
-            BulkWriteResult bulkWriteResult = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").bulkWrite(player1);
-            BulkWriteResult bulkWriteResult2 = MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").bulkWrite(player2);
-            if (bulkWriteResult != null && bulkWriteResult2 != null) {
-                MainController.getInstance().setStatus("Karten wurden verteilt");
             } else {
-                MainController.getInstance().setStatus("Karten wurden nicht verteilt");
+                System.out.println("Spielerids sind nicht beide definiert"+GameLoader.getInstance().spielerid+"  "+GameLoader.getInstance().enemyspielerid);
             }
-            MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(GameLoader.getInstance().selectedlobby.getUuid())),
-                    new Document("$set", new Document("splitted", 1)));
-
         } catch (Exception ex) {
             ex.printStackTrace();
         }
+
     }
 
     public void loadStapelfromplayer() {
@@ -126,7 +131,7 @@ public class AllCards {
             if (GameLoader.getInstance().player1) {
                 documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", GameLoader.getInstance().getSpielerid())).into(new ArrayList<>()));
             } else {
-                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", GameLoader.getInstance().getSpielerid())).into(new ArrayList<>()));
+                documents.addAll(MongoDBConnector.getInstance().getMongoDatabase().getCollection("CardToPlayer").find(new Document("playername", GameLoader.getInstance().enemyspielerid)).into(new ArrayList<>()));
             }
             for (Document doc : documents) {
                 Card card = getCardbyID(doc.getInteger("cardid"));

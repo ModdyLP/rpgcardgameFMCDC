@@ -115,6 +115,7 @@ public class MainController {
     public void start() {
         System.out.println("Start init");
         if (GameLoader.getInstance().selectedlobby != null) {
+            GameLoader.getInstance().setSpielerid();
             setStatus("Lade Kartendeck...");
             Platform.runLater(() -> {
                 try {

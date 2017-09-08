@@ -11,5 +11,6 @@
       <Button fx:id="neueLobby" layoutX="415.0" layoutY="300.0" mnemonicParsing="false" prefHeight="25.0" prefWidth="85.0" text="Neue Lobby" AnchorPane.bottomAnchor="75.0" AnchorPane.rightAnchor="100.0" />
       <Label fx:id="serverstatus" layoutX="472.0" layoutY="83.0" prefHeight="17.0" prefWidth="205.0" text="Label" AnchorPane.rightAnchor="100.0" AnchorPane.topAnchor="83.0" />
       <Label layoutX="100.0" layoutY="83.0" text="Lobbys" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="83.0" />
+      <Label fx:id="playername" layoutX="100.0" layoutY="54.0" text="Label" AnchorPane.leftAnchor="100.0" AnchorPane.topAnchor="54.0" />
    </children>
 </AnchorPane>

@@ -31,6 +31,9 @@ public class LobbyController implements Initializable {
     @FXML
     public Button neueLobby;
 
+    @FXML
+    public Label playername;
+
 
     private static LobbyController instance;
 
@@ -60,13 +63,21 @@ public class LobbyController implements Initializable {
         }
     }
 
+    private void setPlayername(String name) {
+        Platform.runLater(() ->playername.setText("Angemeldet als: "+name));
+    }
+    private void removePlayername() {
+        Platform.runLater(() ->playername.setText("Nicht angemeldet."));
+    }
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         instance = this;
         setOffline(true);
         Client.getInstance().createClient();
+        removePlayername();
     }
-    public void load() {
+    private void load() {
         if(!GameLoader.getInstance().login) {
             if (FileDriver.getInstance().getPropertyOnly("username") != null) {
                 LoginDialog.createLoginDialog();
@@ -77,6 +88,7 @@ public class LobbyController implements Initializable {
             }
         }
         if (!GameLoader.getInstance().loaded && GameLoader.getInstance().authorized) {
+            setPlayername(GameLoader.getInstance().spielername);
             Thread thread = new Thread(new Runnable() {
                 @Override
                 public void run() {

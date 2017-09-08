@@ -104,8 +104,6 @@ public class HubController {
         instance = this;
         System.out.println((GameLoader.getInstance().selectedlobby != null)+ "  "+GameLoader.getInstance().selectedlobby.getName());
         if (GameLoader.getInstance().selectedlobby != null) {
-            GameLoader.getInstance().setSpielerid();
-            GameLoader.getInstance().updateLobby();
             AllCards.getInstance().loadCards();
             cardboxplaces.put(0, true);
             cardboxplaces.put(1, true);

@@ -59,8 +59,10 @@ public class GameLoader {
     public void sendData(JSONObject jsonObject) {
         if (player1 && GameLoader.getInstance().selectedlobby != null) {
             jsonObject.put("client1", getSpielerid());
-        } else {
+        } else if (!player1 && GameLoader.getInstance().selectedlobby != null){
             jsonObject.put("client2", getSpielerid());
+        } else {
+            System.out.println("Fehler");
         }
         jsonObject.put("lobbyid", selectedlobby.getUuid());
         jsonObject.put("kartegelegt",RoundLoader.getInstance().getCardcounter());
@@ -137,7 +139,7 @@ public class GameLoader {
             ArrayList<Document> documents = MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").find(new Document("_id", new ObjectId(selectedlobby.getUuid()))).into(new ArrayList<>());
             for (Document doc : documents) {
                 System.out.println("Spieler 1: " + doc.getInteger("player1") + " | Spieler2: " + doc.getInteger("player2"));
-                if (doc.getInteger("player1") != 200) {
+                if (doc.getInteger("player1") != 200 && doc.getInteger("player2") != 200) {
                     player1 = true;
                     MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
                             new Document("$set", new Document("owner", spielerid)));
@@ -145,12 +147,14 @@ public class GameLoader {
                     logout();
                     System.out.println("Lobby ist voll");
                 }
+                System.out.println("Player 1: "+player1);
             }
+            updateLobby();
         } catch (Exception ex) {
             ex.printStackTrace();
         }
     }
-    public void updateLobby() {
+    private void updateLobby() {
         if (player1) {
             MongoDBConnector.getInstance().getMongoDatabase().getCollection("Game").updateOne(new Document("_id", new ObjectId(selectedlobby.getUuid())),
                     new Document("$set", new Document("player1", 200).append("player2", 0).append("player1name", spielerid)));
